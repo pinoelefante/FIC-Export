@@ -38,10 +38,11 @@ namespace CanottaggioConsole
             var separator = string.Empty;
             var exportType = string.Empty;
             var national = false;
+            var title = string.Empty;
 
             credits();
 
-            if (args.Length != 4)
+            if (args.Length != 5)
             {
                 do
                 {
@@ -100,6 +101,9 @@ namespace CanottaggioConsole
                     national = Boolean.Parse(consoleValue);
                     break;
                 } while (true);
+
+                Console.Write("Nome competizione: ");
+                title = Console.ReadLine().Trim();
             }
             else
             {
@@ -107,8 +111,9 @@ namespace CanottaggioConsole
                 separator = args[1];
                 exportType = args[2];
                 national = Boolean.Parse(args[3]);
+                title = args[4];
             }
-            Debug.WriteLine($"Comando={filename} {separator} {exportType} {national}");
+            Debug.WriteLine($"Comando={filename} {separator} {exportType} {national} {title}");
             
             var content = readFile(filename);
             if (content == null || content.Length <= 1)
@@ -126,14 +131,14 @@ namespace CanottaggioConsole
                     MiSpeakerConverter(contentDictionary, national);
                     break;
                 case "tvg":
-                    TVGConverter(contentDictionary, national);
+                    TVGConverter(contentDictionary, national, title);
                     break;
                 case "entrambi":
                     MiSpeakerConverter(contentDictionary, national);
-                    TVGConverter(contentDictionary, national);
+                    TVGConverter(contentDictionary, national, title);
                     break;
             }
-            Console.WriteLine("\nFile esportato. Premere un tasto per chiudere la finestra");
+            Console.WriteLine("\nFile esportato/i. Premere un tasto per chiudere la finestra");
             Console.ReadKey();
         }
         private static void loadCategories()
@@ -188,29 +193,45 @@ namespace CanottaggioConsole
         }
         private static void MiSpeakerConverter(List<Dictionary<string, string>> fields, bool isNational)
         {
-            using (var file = new StreamWriter(new FileStream($@"C:\Users\pinoe\Desktop\PinoExport_MiSpeaker_{(isNational ? "Naz" : "Int")}.csv", FileMode.Create), Encoding.UTF8))
+            Console.WriteLine("\nAvvio esportazione MiSpeaker");
+            var now = DateTime.Now;
+            var filename = string.Format("Export_MiSpeaker_{0}_{1:D2}{2:D2}{3:D4}.csv", (isNational ? "Naz" : "Int"), now.Day, now.Month, now.Year);
+            try
             {
-                if(isNational)
+                using (var file = new StreamWriter(new FileStream($@"{getDesktopPath()}\{filename}", FileMode.Create), Encoding.UTF8))
                 {
-
-                }
-                else
-                    file.WriteLine($"Batteria;Acqua;Pettorale;Flag;Cognome;SecondoNome;Società;Atleta1;Atleta2;Atleta3;Atleta4");
-                foreach(var row in fields)
-                {
+                    var buffer = new StringBuilder(16384); //16384 = 16KB
                     if (isNational)
                     {
 
                     }
                     else
                     {
-                        var isTeam = !string.IsNullOrEmpty(row["Atleta3"].Trim()); //ci sono più di due atleti
-                        var flag = $@"Flags3D\{(getFlagName(row["Nazione"].Trim()))}.png";
-                        var teamName = getTeamName(row["Nazione"].Trim());
-                        var surname = getSurname(row["Nazione"].Trim(), isTeam);
-                        file.WriteLine($"{row["Batteria"]};{row["Acqua"]};{row["Pettorale"]};{flag};{surname};{(isTeam ? "" : row["Atleta1"].Replace("|", " "))};{teamName};{row["Atleta1"].Replace("|", " ")};{row["Atleta2"].Replace("|", " ")};{row["Atleta3"].Replace("|", " ")};{row["Atleta4"].Replace("|", " ")};");
+                        buffer.AppendLine($"Batteria;Acqua;Pettorale;Flag;Cognome;SecondoNome;Società;Atleta1;Atleta2;Atleta3;Atleta4");
                     }
+                    foreach (var row in fields)
+                    {
+                        if (isNational)
+                        {
+
+                        }
+                        else
+                        {
+                            var isTeam = !string.IsNullOrEmpty(row["Atleta3"].Trim()); //ci sono più di due atleti
+                            var flag = $@"Flags3D\{(getFlagName(row["Nazione"].Trim()))}.png";
+                            var teamName = getTeamName(row["Nazione"].Trim());
+                            var surname = getSurname(row["Nazione"].Trim(), isTeam);
+                            buffer.AppendLine($"{row["Batteria"]};{row["Acqua"]};{row["Pettorale"]};{flag};{surname};{(isTeam ? "" : row["Atleta1"].Replace("|", " "))};{teamName};{row["Atleta1"].Replace("|", " ")};{row["Atleta2"].Replace("|", " ")};{row["Atleta3"].Replace("|", " ")};{row["Atleta4"].Replace("|", " ")};");
+                        }
+                    }
+                    Console.WriteLine($"Salvataggio file {filename} sul desktop");
+                    file.Write(buffer.ToString());
                 }
+                Console.WriteLine("Esportazione MiSpeaker completata con successo");
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"Si e' verificato un errore durante l'esportazione di MiSpeaker\n{e.Message}\n{e.StackTrace}");
             }
         }
         private static string getFlagName(string nation)
@@ -266,75 +287,90 @@ namespace CanottaggioConsole
                 Console.WriteLine($"Descrizione categoria ({catId}) non trovata. Categoria2 ({cat2})");
             return string.Empty;
         }
-        private static void TVGConverter(List<Dictionary<string, string>> fields, bool isNational)
+        private static void TVGConverter(List<Dictionary<string, string>> fields, bool isNational, string title)
         {
-            var title = "Prova file xlsx";
-            var groups = fields.GroupBy(x => x["Batteria"]);
-            using (var excelPackage = new ExcelPackage())
+            Console.WriteLine("\nAvvio esportazione TVG");
+            try
             {
-                for(int i = groups.Count()-1;i>=0;i--)
+                var groups = fields.GroupBy(x => x["Batteria"]);
+                using (var excelPackage = new ExcelPackage())
                 {
-                    var group = groups.ElementAt(i);
-                    var batteryNum = group.First()["Batteria"];
-                    var category = group.First()["Categoria"];
-                    var isTeam = !string.IsNullOrEmpty(group.First()["Atleta3"].Trim());
-                    var worksheet = excelPackage.Workbook.Worksheets.Add(batteryNum);
-                    worksheet.Cells["A1"].Value = title;
-                    worksheet.Cells["A2"].Value = $"Starting list {category}";
-                    if(isNational)
+                    for (int i = groups.Count() - 1; i >= 0; i--)
                     {
-
-                    }
-                    else
-                    {
-                        worksheet.Cells["A3"].Value = "Acqua";
-                        worksheet.Cells["B3"].Value = "Pettorale";
-                        worksheet.Cells["C3"].Value = "Flag";
-                        worksheet.Cells["D3"].Value = "Atleta";
-                        worksheet.Cells["E3"].Value = "Societa";
-                        worksheet.Cells["F3"].Value = "Societa1";
-                        worksheet.Cells["G3"].Value = "Atleta1";
-                        worksheet.Cells["H3"].Value = "Atleta2";
-                        worksheet.Cells["I3"].Value = "Atleta3";
-                        worksheet.Cells["J3"].Value = "Atleta4";
-                        worksheet.Cells["K3"].Value = "Atleta5";
-                        worksheet.Cells["L3"].Value = "Atleta6";
-                        worksheet.Cells["M3"].Value = "Atleta7";
-                        worksheet.Cells["N3"].Value = "Atleta8";
-                        worksheet.Cells["O3"].Value = "Atleta9";
-                        for (int j=0;j<group.Count();j++)
+                        var group = groups.ElementAt(i);
+                        var batteryNum = group.First()["Batteria"];
+                        var category = group.First()["Categoria"];
+                        var isTeam = !string.IsNullOrEmpty(group.First()["Atleta3"].Trim());
+                        var worksheet = excelPackage.Workbook.Worksheets.Add(batteryNum);
+                        worksheet.Cells["A1"].Value = title;
+                        worksheet.Cells["A2"].Value = $"Starting list {category}";
+                        if (isNational)
                         {
-                            var atleta = group.ElementAt(j);
-                            worksheet.Cells[$"A{4+j}"].Value = Int32.Parse(atleta["Acqua"]);
-                            worksheet.Cells[$"B{4+j}"].Value = Int32.Parse(atleta["Pettorale"]);
-                            worksheet.Cells[$"C{4+j}"].Value = $@"Flags3D\{getFlagName(atleta["Nazione"])}.png";
-                            worksheet.Cells[$"D{4 + j}"].Value = getSurname(atleta["Nazione"], isTeam);
-                            worksheet.Cells[$"E{4+j}"].Value = isTeam ? "" : atleta["Atleta1"].Replace("|", " ");
-                            worksheet.Cells[$"F{4+j}"].Value = getTeamName(atleta["Nazione"]);
-                            worksheet.Cells[$"G{4+j}"].Value = atleta["Atleta1"].Replace("|", " ");
-                            worksheet.Cells[$"H{4+j}"].Value = atleta["Atleta2"].Replace("|", " ");
-                            worksheet.Cells[$"I{4+j}"].Value = atleta["Atleta3"].Replace("|", " ");
-                            worksheet.Cells[$"J{4+j}"].Value = atleta["Atleta4"].Replace("|", " ");
-                            worksheet.Cells[$"K{4+j}"].Value = atleta["Atleta5"].Replace("|", " ");
-                            worksheet.Cells[$"L{4+j}"].Value = atleta["Atleta6"].Replace("|", " ");
-                            worksheet.Cells[$"M{4+j}"].Value = atleta["Atleta7"].Replace("|", " ");
-                            worksheet.Cells[$"N{4+j}"].Value = atleta["Atleta8"].Replace("|", " ");
-                            worksheet.Cells[$"O{4+j}"].Value = atleta["Atleta9"].Replace("|", " ") + " (COX)";
-                            worksheet.Cells[$"P{4+j}"].Value = atleta["Categoria"];
-                            worksheet.Cells[$"Q{4+j}"].Value = getCategoryDescription(atleta["Categoria"], atleta["Categoria2"]);
-                            worksheet.Cells[$"R{4+j}"].Value = Int32.Parse(atleta["Batteria"]);
-                            worksheet.Cells[$"S{4+j}"].Value = Int32.Parse(atleta["Acqua"]);
-                            worksheet.Cells[$"T{4+j}"].Value = 1;
+
+                        }
+                        else
+                        {
+                            worksheet.Cells["A3"].Value = "Acqua";
+                            worksheet.Cells["B3"].Value = "Pettorale";
+                            worksheet.Cells["C3"].Value = "Flag";
+                            worksheet.Cells["D3"].Value = "Atleta";
+                            worksheet.Cells["E3"].Value = "Societa";
+                            worksheet.Cells["F3"].Value = "Societa1";
+                            worksheet.Cells["G3"].Value = "Atleta1";
+                            worksheet.Cells["H3"].Value = "Atleta2";
+                            worksheet.Cells["I3"].Value = "Atleta3";
+                            worksheet.Cells["J3"].Value = "Atleta4";
+                            worksheet.Cells["K3"].Value = "Atleta5";
+                            worksheet.Cells["L3"].Value = "Atleta6";
+                            worksheet.Cells["M3"].Value = "Atleta7";
+                            worksheet.Cells["N3"].Value = "Atleta8";
+                            worksheet.Cells["O3"].Value = "Atleta9";
+                            for (int j = 0; j < group.Count(); j++)
+                            {
+                                var atleta = group.ElementAt(j);
+                                worksheet.Cells[$"A{4 + j}"].Value = Int32.Parse(atleta["Acqua"]);
+                                worksheet.Cells[$"B{4 + j}"].Value = Int32.Parse(atleta["Pettorale"]);
+                                worksheet.Cells[$"C{4 + j}"].Value = $@"Flags3D\{getFlagName(atleta["Nazione"])}.png";
+                                worksheet.Cells[$"D{4 + j}"].Value = getSurname(atleta["Nazione"], isTeam);
+                                worksheet.Cells[$"E{4 + j}"].Value = isTeam ? "" : atleta["Atleta1"].Replace("|", " ");
+                                worksheet.Cells[$"F{4 + j}"].Value = getTeamName(atleta["Nazione"]);
+                                worksheet.Cells[$"G{4 + j}"].Value = atleta["Atleta1"].Replace("|", " ");
+                                worksheet.Cells[$"H{4 + j}"].Value = atleta["Atleta2"].Replace("|", " ");
+                                worksheet.Cells[$"I{4 + j}"].Value = atleta["Atleta3"].Replace("|", " ");
+                                worksheet.Cells[$"J{4 + j}"].Value = atleta["Atleta4"].Replace("|", " ");
+                                worksheet.Cells[$"K{4 + j}"].Value = atleta["Atleta5"].Replace("|", " ");
+                                worksheet.Cells[$"L{4 + j}"].Value = atleta["Atleta6"].Replace("|", " ");
+                                worksheet.Cells[$"M{4 + j}"].Value = atleta["Atleta7"].Replace("|", " ");
+                                worksheet.Cells[$"N{4 + j}"].Value = atleta["Atleta8"].Replace("|", " ");
+                                worksheet.Cells[$"O{4 + j}"].Value = atleta["Atleta9"].Replace("|", " ") + " (COX)";
+                                worksheet.Cells[$"P{4 + j}"].Value = atleta["Categoria"];
+                                worksheet.Cells[$"Q{4 + j}"].Value = getCategoryDescription(atleta["Categoria"], atleta["Categoria2"]);
+                                worksheet.Cells[$"R{4 + j}"].Value = Int32.Parse(atleta["Batteria"]);
+                                worksheet.Cells[$"S{4 + j}"].Value = Int32.Parse(atleta["Acqua"]);
+                                worksheet.Cells[$"T{4 + j}"].Value = 1;
+                            }
                         }
                     }
+                    var dateNow = DateTime.Now;
+                    var filename = string.Format("Export_TVG_{0}_{1:D2}{2:D2}{3:D4}.xlsx", (isNational ? "Naz" : "Int"), dateNow.Day, dateNow.Month, dateNow.Year);
+                    var fileinfo = new FileInfo($@"{getDesktopPath()}\{filename}");
+                    excelPackage.SaveAs(fileinfo);
+                    Console.WriteLine($"Il file {filename} e' stato salvato sul desktop");
+                    Console.WriteLine("Esportazione TVG completata con successo");
                 }
-                var fileinfo = new FileInfo(@"c:\users\pinoe\desktop\TVG.xlsx");
-                excelPackage.SaveAs(fileinfo);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"Si e' verificato un errore durante l'esportazione di TVG\n{e.Message}\n{e.StackTrace}");
             }
         }
         private static void credits()
         {
-            Console.WriteLine("Sviluppato da Giuseppe Elefante <giuseppe.elefante90@gmail.com>\nFICr Salerno - A.S.D. Cronometristi Salernitani \"R. Marra\"\n\n");
+            Console.WriteLine("Sviluppato da Giuseppe Elefante <giuseppe.elefante90@gmail.com>\nFICr Salerno - A.S.D. Cronometristi Salernitani \"R. Marra\"\n");
+        }
+        private static string getDesktopPath()
+        {
+            return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         }
     }
     
