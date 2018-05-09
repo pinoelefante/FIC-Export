@@ -68,7 +68,7 @@ namespace CanottaggioConsole
                 base_tvg = args[5];
             }
             Debug.WriteLine($"Comando={filename} {separator} {exportType} {national} {title} {base_tvg}");
-            
+            loadFileMapping();
             var content = readFile(filename);
             if (content == null || content.Length <= 1)
             {
@@ -98,6 +98,23 @@ namespace CanottaggioConsole
                 VerifyFlagsInt(contentDictionary, base_tvg);
             Console.WriteLine("\nFile esportato/i. Premere un tasto per chiudere la finestra");
             Console.ReadKey();
+        }
+        private static void loadFileMapping()
+        {
+            var configLines = readFile("fileconfig.csv");
+            if (configLines == null || configLines.Count() <= 1)
+            {
+                Console.WriteLine("\nMapping non trovato. Verra' usato il mapping di default");
+                return;
+            }
+            Console.WriteLine($"Ci sono {configLines.Count()} righe nel file di mapping");
+            file_config.Clear();
+            var splitVal = new char[] { ';' };
+            foreach(var line in configLines)
+            {
+                var values = line.Split(splitVal, StringSplitOptions.None);
+                file_config.Add(values[1], values[0]);
+            }
         }
         private static string getStringFromCommandLine(string text, bool lower=true, bool acceptAll = false, params string[] validValues)
         {
