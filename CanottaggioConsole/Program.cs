@@ -32,6 +32,7 @@ namespace CanottaggioConsole
             };
         private static Dictionary<string, Tuple<string, string>> categories = new Dictionary<string, Tuple<string, string>>();
         private static Dictionary<string, Tuple<string, string>> nations = new Dictionary<string, Tuple<string, string>>();
+        private static Dictionary<string, string> teams = new Dictionary<string, string>();
         static void Main(string[] args)
         {
             var filename = string.Empty;
@@ -123,8 +124,6 @@ namespace CanottaggioConsole
                 return;
             }
             var contentDictionary = parseFile(content, separator);
-            loadCategories();
-            loadNations();
             switch(exportType.ToLower())
             {
                 case "mispeaker":
@@ -161,6 +160,17 @@ namespace CanottaggioConsole
             {
                 var values = line.Split(splitVal, StringSplitOptions.None);
                 nations.Add(values[1].Trim(), new Tuple<string, string>(values[0].Trim(), values[2].Trim()));
+            }
+        }
+        private static void loadTeams()
+        {
+            teams.Clear();
+            var lines = File.ReadAllLines("teams.csv");
+            var splitVal = new char[] { ';' };
+            foreach(var line in lines)
+            {
+                var values = line.Split(splitVal, StringSplitOptions.None);
+                teams.Add(values[0], values[1]);
             }
         }
         private static string[] readFile(string path)
@@ -217,8 +227,8 @@ namespace CanottaggioConsole
                         else
                         {
                             var flag = $@"Flags3D\{(getFlagName(row["Nazione"].Trim()))}.png";
-                            var teamName = getTeamName(row["Nazione"].Trim());
-                            var surname = getSurname(row["Nazione"].Trim(), isTeam);
+                            var teamName = getTeamNameInt(row["Nazione"].Trim());
+                            var surname = getSurnameInt(row["Nazione"].Trim(), isTeam);
                             buffer.AppendLine($"{row["Batteria"]};{row["Acqua"]};{row["Pettorale"]};{flag};{surname};{(isTeam ? "" : row["Atleta1"].Replace("|", " "))};{teamName};{row["Atleta1"].Replace("|", " ")};{row["Atleta2"].Replace("|", " ")};{row["Atleta3"].Replace("|", " ")};{row["Atleta4"].Replace("|", " ")};");
                         }
                     }
@@ -234,7 +244,9 @@ namespace CanottaggioConsole
         }
         private static string getFlagName(string nation)
         {
-            var shortNation = getShortSurname(nation);
+            if (!nations.Any())
+                loadNations();
+            var shortNation = getShortSurnameInt(nation);
             if (nations.ContainsKey(nation))
                 return nations[nation].Item1;
             else if (nations.ContainsKey(shortNation))
@@ -243,9 +255,11 @@ namespace CanottaggioConsole
                 Console.WriteLine($"Bandiera non trovata: {nation}");
             return nation.Substring(0,3);
         }
-        private static string getTeamName(string nation)
+        private static string getTeamNameInt(string nation)
         {
-            var shortNation = getShortSurname(nation);
+            if (!nations.Any())
+                loadNations();
+            var shortNation = getShortSurnameInt(nation);
             if (nations.ContainsKey(nation))
                 return nations[nation].Item2.ToUpper();
             else if (nations.ContainsKey(shortNation))
@@ -254,9 +268,11 @@ namespace CanottaggioConsole
                 Console.WriteLine($"Team - Nazione ({nation}) non trovata - Short ({nation})");
             return string.Empty;
         }
-        private static string getSurname(string nation, bool isTeam)
+        private static string getSurnameInt(string nation, bool isTeam)
         {
-            var shortNation = getShortSurname(nation);
+            if (!nations.Any())
+                loadNations();
+            var shortNation = getShortSurnameInt(nation);
             if (nations.ContainsKey(nation) && isTeam)
                 return nations[nation].Item2.ToUpper();
             else if(nations.ContainsKey(shortNation) && isTeam)
@@ -265,7 +281,7 @@ namespace CanottaggioConsole
                 Console.WriteLine($"Surname - Nazione ({nation}) non trovata - Short ({shortNation})");
             return shortNation;
         }
-        private static string getShortSurname(string nation)
+        private static string getShortSurnameInt(string nation)
         {
             var shortNation = nation.ToString();
             if (shortNation.Where(x => x == ' ').Count() >= 2)
@@ -277,6 +293,8 @@ namespace CanottaggioConsole
         }
         private static string getCategoryDescription(string catId, string cat2)
         {
+            if (!categories.Any())
+                loadCategories();
             if (categories.ContainsKey(catId))
                 return categories[catId].Item1;
             else if (categories.ContainsKey(cat2))
@@ -287,6 +305,8 @@ namespace CanottaggioConsole
         }
         private static string getCategorySex(string catId, string cat2Id)
         {
+            if (!categories.Any())
+                loadCategories();
             if (categories.ContainsKey(catId))
                 return categories[catId].Item2;
             else if (categories.ContainsKey(cat2Id))
@@ -297,7 +317,11 @@ namespace CanottaggioConsole
         }
         private static string getTeamNameNational(string code)
         {
-            return "";
+            if (teams.ContainsKey(code))
+                return teams[code];
+            else
+                Console.WriteLine($"Squadra non trovata ({code})");
+            return string.Empty;
         }
         private static char[] splitName = new char[] { '|' };
         private static void TVGConverter(List<Dictionary<string, string>> fields, bool isNational, string title)
@@ -354,9 +378,9 @@ namespace CanottaggioConsole
                                 var atleta = group.ElementAt(j);
                                 worksheet.Cells[$"A{4 + j}"].Value = Int32.Parse(atleta["Acqua"]);
                                 worksheet.Cells[$"B{4 + j}"].Value = Int32.Parse(atleta["Pettorale"]);
-                                worksheet.Cells[$"C{4 + j}"].Value = getSurname(atleta["Nazione"], isTeam);
+                                worksheet.Cells[$"C{4 + j}"].Value = getSurnameInt(atleta["Nazione"], isTeam);
                                 worksheet.Cells[$"D{4 + j}"].Value = isTeam ? "" : atleta["Atleta1"].Replace("|", " ");
-                                worksheet.Cells[$"E{4 + j}"].Value = getTeamName(atleta["Nazione"]);
+                                worksheet.Cells[$"E{4 + j}"].Value = getTeamNameNational(atleta["id_squadra"]);
                                 worksheet.Cells[$"F{4 + j}"].Value = atleta["Atleta1"].Replace("|", " ");
                                 worksheet.Cells[$"G{4 + j}"].Value = atleta["Atleta2"].Replace("|", " ");
                                 worksheet.Cells[$"H{4 + j}"].Value = atleta["Atleta3"].Replace("|", " ");
@@ -367,7 +391,7 @@ namespace CanottaggioConsole
                                 worksheet.Cells[$"M{4 + j}"].Value = atleta["Atleta8"].Replace("|", " ");
                                 worksheet.Cells[$"N{4 + j}"].Value = atleta["Atleta9"].Replace("|", " ") + " (COX)";
                                 worksheet.Cells[$"O{4 + j}"].Value = getCategoryDescription(atleta["Categoria2"], atleta["Categoria"]);
-                                worksheet.Cells[$"P{4 + j}"].Value = "descr_turno";
+                                worksheet.Cells[$"P{4 + j}"].Value = ""; //descr_turno
                                 worksheet.Cells[$"Q{4 + j}"].Value = atleta["Categoria2"];
                                 worksheet.Cells[$"R{4 + j}"].Value = Int32.Parse(atleta["Batteria"]);
                                 worksheet.Cells[$"S{4 + j}"].Value = !string.IsNullOrEmpty(atleta["Atleta1"]) ? atleta["Atleta1"].Split(splitName)[0] : "";
@@ -380,7 +404,7 @@ namespace CanottaggioConsole
                                 worksheet.Cells[$"Z{4 + j}"].Value = !string.IsNullOrEmpty(atleta["Atleta2"]) ? atleta["Atleta2"].Split(splitName)[0] : "";
                                 worksheet.Cells[$"AA{4 + j}"].Value = !string.IsNullOrEmpty(atleta["Atleta3"]) ? atleta["Atleta3"].Split(splitName)[0] : "";
                                 worksheet.Cells[$"AB{4 + j}"].Value = !string.IsNullOrEmpty(atleta["Atleta4"]) ? atleta["Atleta4"].Split(splitName)[0] : "";
-                                worksheet.Cells[$"AC{4 + j}"].Value = "equipaggio";
+                                worksheet.Cells[$"AC{4 + j}"].Value = ""; //equipaggio
                             }
                         }
                         else
@@ -406,9 +430,9 @@ namespace CanottaggioConsole
                                 worksheet.Cells[$"A{4 + j}"].Value = Int32.Parse(atleta["Acqua"]);
                                 worksheet.Cells[$"B{4 + j}"].Value = Int32.Parse(atleta["Pettorale"]);
                                 worksheet.Cells[$"C{4 + j}"].Value = $@"Flags3D\{getFlagName(atleta["Nazione"])}.png";
-                                worksheet.Cells[$"D{4 + j}"].Value = getSurname(atleta["Nazione"], isTeam);
+                                worksheet.Cells[$"D{4 + j}"].Value = getSurnameInt(atleta["Nazione"], isTeam);
                                 worksheet.Cells[$"E{4 + j}"].Value = isTeam ? "" : atleta["Atleta1"].Replace("|", " ");
-                                worksheet.Cells[$"F{4 + j}"].Value = getTeamName(atleta["Nazione"]);
+                                worksheet.Cells[$"F{4 + j}"].Value = getTeamNameInt(atleta["Nazione"]);
                                 worksheet.Cells[$"G{4 + j}"].Value = atleta["Atleta1"].Replace("|", " ");
                                 worksheet.Cells[$"H{4 + j}"].Value = atleta["Atleta2"].Replace("|", " ");
                                 worksheet.Cells[$"I{4 + j}"].Value = atleta["Atleta3"].Replace("|", " ");
