@@ -41,7 +41,7 @@ namespace CanottaggioConsole
             var national = false;
             var title = string.Empty;
 
-            credits();
+            AppCredits();
 
             if (args.Length != 5)
             {
@@ -63,15 +63,24 @@ namespace CanottaggioConsole
                     Console.WriteLine("Verra' utilizzato il carattere ; come separatore CSV");
                 }
 
+                var leaveWhile = false;
                 do
                 {
-                    Console.Write("Export [mispeaker/tvg/entrambi]: ");
+                    Console.Write("Export [mispeaker/tvg/atleti/tutto]: ");
                     exportType = Console.ReadLine().Trim().ToLower();
-                    if (exportType.CompareTo("mispeaker") == 0 || exportType.CompareTo("tvg") == 0 || exportType.CompareTo("entrambi")==0)
-                        break;
-                    else
-                        Console.WriteLine("Valore non valido");
-                } while (true);
+                    switch(exportType)
+                    {
+                        case "mispeaker":
+                        case "tvg":
+                        case "atleti":
+                        case "tutto":
+                            leaveWhile = true;
+                            break;
+                        default:
+                            Console.WriteLine("Valore non valido");
+                            break;
+                    }
+                } while (!leaveWhile);
 
                 do
                 {
@@ -132,9 +141,13 @@ namespace CanottaggioConsole
                 case "tvg":
                     TVGConverter(contentDictionary, national, title);
                     break;
-                case "entrambi":
+                case "atleti":
+                    CreateAthletesList(contentDictionary);
+                    break;
+                case "tutto":
                     MiSpeakerConverter(contentDictionary, national);
                     TVGConverter(contentDictionary, national, title);
+                    CreateAthletesList(contentDictionary);
                     break;
             }
             Console.WriteLine("\nFile esportato/i. Premere un tasto per chiudere la finestra");
@@ -463,7 +476,37 @@ namespace CanottaggioConsole
                 Console.WriteLine($"Si e' verificato un errore durante l'esportazione di TVG\n{e.Message}\n{e.StackTrace}");
             }
         }
-        private static void credits()
+        private static void CreateAthletesList(List<Dictionary<string, string>> fields)
+        {
+            Console.WriteLine("\nCarico la lista degli atleti");
+            var list = new List<string>();
+            foreach(var dict in fields)
+            {
+                for(int i=1;i<=9 && dict.ContainsKey($"Atleta{i}"); i++)
+                {
+
+                    if(!string.IsNullOrEmpty(dict[$"Atleta{i}"]))
+                        list.Add(dict[$"Atleta{i}"].Trim().Replace('|', ' '));
+                    else
+                        break;
+                }
+            }
+            list = list.OrderBy(x => x).ToList();
+            var now = DateTime.Now;
+            var filename = string.Format("Export_Credits_{0:D2}{1:D2}{2:D4}.xlsx", now.Day, now.Month, now.Year);
+
+            using (var excel = new ExcelPackage())
+            
+            {
+                var sheet = excel.Workbook.Worksheets.Add("Atleti");
+                for (int i = 0; i < list.Count; i++)
+                    sheet.Cells[$"A{(i + 1)}"].Value = list[i];
+                Console.WriteLine($"Salvo la lista degli atleti sul desktop nel file {filename}");
+                var fileinfo = new FileInfo($@"{getDesktopPath()}\{filename}");
+                excel.SaveAs(fileinfo);
+            }
+        }
+        private static void AppCredits()
         {
             Console.WriteLine("Sviluppato da Giuseppe Elefante <giuseppe.elefante90@gmail.com>\nFICr Salerno - A.S.D. Cronometristi Salernitani \"R. Marra\"\n");
         }
