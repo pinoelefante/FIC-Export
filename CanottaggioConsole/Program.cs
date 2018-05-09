@@ -142,14 +142,16 @@ namespace CanottaggioConsole
                     TVGConverter(contentDictionary, national, title);
                     break;
                 case "atleti":
-                    CreateAthletesList(contentDictionary);
+                    AthletesCreditsConvert(contentDictionary);
                     break;
                 case "tutto":
                     MiSpeakerConverter(contentDictionary, national);
                     TVGConverter(contentDictionary, national, title);
-                    CreateAthletesList(contentDictionary);
+                    AthletesCreditsConvert(contentDictionary);
                     break;
             }
+            if (!national)
+                VerifyFlagsInt(contentDictionary, @"C:\tvg\Canottaggio_Int");
             Console.WriteLine("\nFile esportato/i. Premere un tasto per chiudere la finestra");
             Console.ReadKey();
         }
@@ -476,7 +478,7 @@ namespace CanottaggioConsole
                 Console.WriteLine($"Si e' verificato un errore durante l'esportazione di TVG\n{e.Message}\n{e.StackTrace}");
             }
         }
-        private static void CreateAthletesList(List<Dictionary<string, string>> fields)
+        private static void AthletesCreditsConvert(List<Dictionary<string, string>> fields)
         {
             Console.WriteLine("\nCarico la lista degli atleti");
             var list = new List<string>();
@@ -504,6 +506,26 @@ namespace CanottaggioConsole
                 Console.WriteLine($"Salvo la lista degli atleti sul desktop nel file {filename}");
                 var fileinfo = new FileInfo($@"{getDesktopPath()}\{filename}");
                 excel.SaveAs(fileinfo);
+            }
+        }
+        private static void VerifyFlagsInt(List<Dictionary<string, string>> contents, string folder)
+        {
+            Console.WriteLine("\nVerifico la presenza dei file delle bandiere");
+            Dictionary<string, bool> verifyStatus = new Dictionary<string, bool>();
+            foreach(var atl in contents)
+            {
+                if(atl.ContainsKey("Nazione"))
+                {
+                    var flag = $@"Flags3D\{getFlagName(atl["Nazione"])}.png";
+                    if(!verifyStatus.ContainsKey(flag))
+                    {
+                        var path = Path.Combine(folder, flag);
+                        var flagExists = File.Exists(path);
+                        verifyStatus.Add(flag, flagExists);
+                        if (!flagExists)
+                            Console.WriteLine($"Bandiera non presente ({flag})");
+                    }
+                }
             }
         }
         private static void AppCredits()
