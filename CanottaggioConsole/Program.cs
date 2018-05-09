@@ -40,80 +40,23 @@ namespace CanottaggioConsole
             var exportType = string.Empty;
             var national = false;
             var title = string.Empty;
+            var base_tvg = string.Empty;
 
             AppCredits();
 
-            if (args.Length != 5)
+            if (args.Length != 6)
             {
-                do
-                {
-                    Console.Write("Percorso file: ");
-                    filename = Console.ReadLine().Trim();
-                    if (File.Exists(filename))
-                        break;
-                    else
-                        Console.WriteLine("File inesistente");
-                } while (true);
-                
-                Console.Write("Separatore CSV [default = ;]: ");
-                separator = Console.ReadLine().Trim();
+                filename = getStringAsPathFromCommandLine("Percorso file: ");
+                separator = getStringFromCommandLine("Separatore CSV [default = ;]: ", true, false, string.Empty, ";", ",");
                 if(string.IsNullOrEmpty(separator))
                 {
                     separator = ";";
                     Console.WriteLine("Verra' utilizzato il carattere ; come separatore CSV");
                 }
-
-                var leaveWhile = false;
-                do
-                {
-                    Console.Write("Export [mispeaker/tvg/atleti/tutto]: ");
-                    exportType = Console.ReadLine().Trim().ToLower();
-                    switch(exportType)
-                    {
-                        case "mispeaker":
-                        case "tvg":
-                        case "atleti":
-                        case "tutto":
-                            leaveWhile = true;
-                            break;
-                        default:
-                            Console.WriteLine("Valore non valido");
-                            break;
-                    }
-                } while (!leaveWhile);
-
-                do
-                {
-                    Console.Write("Nazionale [true/false]: ");
-                    var consoleValue = Console.ReadLine().Trim().ToLower();
-                    switch(consoleValue)
-                    {
-                        case "t":
-                        case "true":
-                        case "v":
-                        case "vero":
-                        case "s":
-                        case "si":
-                        case "nazionale":
-                            consoleValue = "true";
-                            break;
-                        case "internazionale":
-                        case "n":
-                        case "no":
-                        case "f":
-                        case "false":
-                        case "falso":
-                            consoleValue = "false";
-                            break;
-                        default:
-                            continue;
-                    }
-                    national = Boolean.Parse(consoleValue);
-                    break;
-                } while (true);
-
-                Console.Write("Nome competizione: ");
-                title = Console.ReadLine().Trim();
+                exportType = getStringFromCommandLine("Export [mispeaker/tvg/atleti/tutto]: ", true, false, "mispeaker", "tvg", "atleti", "tutto");
+                national = getStringAsBoolFromCommandLine("Nazionale [true/false]: ", true, new string[] { "t", "true", "v", "vero", "s", "si", "nazionale" }, new string[] { "internazionale", "n", "no", "f", "false", "falso" });
+                title = getStringFromCommandLine("Titolo manistazione: ", false, true);
+                base_tvg = getStringAsPathFromCommandLine("Percorso cartella di TVG: ", false);
             }
             else
             {
@@ -122,8 +65,9 @@ namespace CanottaggioConsole
                 exportType = args[2];
                 national = Boolean.Parse(args[3]);
                 title = args[4];
+                base_tvg = args[5];
             }
-            Debug.WriteLine($"Comando={filename} {separator} {exportType} {national} {title}");
+            Debug.WriteLine($"Comando={filename} {separator} {exportType} {national} {title} {base_tvg}");
             
             var content = readFile(filename);
             if (content == null || content.Length <= 1)
@@ -151,9 +95,57 @@ namespace CanottaggioConsole
                     break;
             }
             if (!national)
-                VerifyFlagsInt(contentDictionary, @"C:\tvg\Canottaggio_Int");
+                VerifyFlagsInt(contentDictionary, base_tvg);
             Console.WriteLine("\nFile esportato/i. Premere un tasto per chiudere la finestra");
             Console.ReadKey();
+        }
+        private static string getStringFromCommandLine(string text, bool lower=true, bool acceptAll = false, params string[] validValues)
+        {
+            var line = string.Empty;
+            do
+            {
+                Console.Write(text);
+                line = Console.ReadLine().Trim();
+                if (lower)
+                    line = line.ToLower();
+            } while (!isValidValue(line, validValues) && !acceptAll);
+            return line;
+        }
+        private static string getStringAsPathFromCommandLine(string text, bool file = true)
+        {
+            var line = string.Empty;
+            do
+            {
+                Console.Write(text);
+                line = Console.ReadLine().Trim();
+                if (file && File.Exists(line))
+                    break;
+                if (!file && Directory.Exists(line))
+                    break;
+            } while (true);
+            return line;
+        }
+        private static bool getStringAsBoolFromCommandLine(string text, bool lower, string[] positiveValues, string[] negativeValues)
+        {
+            var line = string.Empty;
+            do
+            {
+                Console.Write(text);
+                line = Console.ReadLine().Trim();
+                if (lower)
+                    line = line.ToLower();
+                if (isValidValue(line, positiveValues))
+                    return true;
+                if (isValidValue(line, negativeValues))
+                    return false;
+            } while (true);
+        }
+        private static bool isValidValue(string input, string[] validValues)
+        {
+            foreach (var vValue in validValues)
+                if (vValue.CompareTo(input) == 0)
+                    return true;
+            return false;
         }
         private static void loadCategories()
         {
@@ -351,6 +343,11 @@ namespace CanottaggioConsole
                     {
                         var group = groups.ElementAt(i);
                         var batteryNum = group.First()["Batteria"];
+                        if(string.IsNullOrEmpty(batteryNum))
+                        {
+                            Console.WriteLine("Verifica che il file csv non contenga righe vuote");
+                            continue;
+                        }
                         var category = group.First()["Categoria"];
                         var isTeam = !string.IsNullOrEmpty(group.First()["Atleta3"].Trim());
                         var worksheet = excelPackage.Workbook.Worksheets.Add(batteryNum);
