@@ -212,7 +212,7 @@ namespace CanottaggioConsole
                         var isTeam = !string.IsNullOrEmpty(row["Atleta3"].Trim()); //ci sono più di due atleti
                         if (isNational)
                         {
-                            buffer.AppendLine($"{row["Batteria"]};{row["Acqua"]};{row["Pettorale"]};Atleta;Societa;Societa1;{row["Atleta1"]};{row["Atleta2"]};{row["Atleta3"]};{row["Atleta4"]};soc;{row["Categoria2"]};{getCategoryDescription(row["Categoria2"],row["Categoria"])}");
+                            buffer.AppendLine($"{row["Batteria"]};{row["Acqua"]};{row["Pettorale"]};Atleta;Societa;Societa1;{row["Atleta1"].Replace("|", " ")};{row["Atleta2"].Replace("|", " ")};{row["Atleta3"].Replace("|", " ")};{row["Atleta4"].Replace("|", " ")};{row["Atleta5"].Replace("|", " ")};{row["Atleta6"].Replace("|", " ")};{row["Atleta7"].Replace("|", " ")};{row["Atleta8"].Replace("|", " ")};{row["Atleta9"].Replace("|", " ")};soc;{row["Categoria2"]};{getCategoryDescription(row["Categoria2"],row["Categoria"])}");
                         }
                         else
                         {
@@ -285,6 +285,21 @@ namespace CanottaggioConsole
                 Console.WriteLine($"Descrizione categoria ({catId}) non trovata. Categoria2 ({cat2})");
             return string.Empty;
         }
+        private static string getCategorySex(string catId, string cat2Id)
+        {
+            if (categories.ContainsKey(catId))
+                return categories[catId].Item2;
+            else if (categories.ContainsKey(cat2Id))
+                return categories[cat2Id].Item2;
+            else
+                Console.WriteLine($"Sex non trovato per la categoria ({catId} - {cat2Id})");
+            return string.Empty;
+        }
+        private static string getTeamNameNational(string code)
+        {
+            return "";
+        }
+        private static char[] splitName = new char[] { '|' };
         private static void TVGConverter(List<Dictionary<string, string>> fields, bool isNational, string title)
         {
             Console.WriteLine("\nAvvio esportazione TVG");
@@ -304,7 +319,69 @@ namespace CanottaggioConsole
                         worksheet.Cells["A2"].Value = $"Starting list {category}";
                         if (isNational)
                         {
-
+                            worksheet.Cells["A3"].Value = "Acqua";
+                            worksheet.Cells["B3"].Value = "Pettorale";
+                            worksheet.Cells["C3"].Value = "Atleta";
+                            worksheet.Cells["D3"].Value = "Societa";
+                            worksheet.Cells["E3"].Value = "Societa1";
+                            worksheet.Cells["F3"].Value = "Atleta1";
+                            worksheet.Cells["G3"].Value = "Atleta2";
+                            worksheet.Cells["H3"].Value = "Atleta3";
+                            worksheet.Cells["I3"].Value = "Atleta4";
+                            worksheet.Cells["J3"].Value = "Atleta5";
+                            worksheet.Cells["K3"].Value = "Atleta6";
+                            worksheet.Cells["L3"].Value = "Atleta7";
+                            worksheet.Cells["M3"].Value = "Atleta8";
+                            worksheet.Cells["N3"].Value = "Atleta9";
+                            worksheet.Cells["O3"].Value = "Descr_Cat";
+                            worksheet.Cells["P3"].Value = "Descr_Turno";
+                            worksheet.Cells["Q3"].Value = "Categoria"; //Categoria 2
+                            worksheet.Cells["R3"].Value = "Gara";
+                            worksheet.Cells["S3"].Value = "Cognome";
+                            worksheet.Cells["T3"].Value = "Nome";
+                            worksheet.Cells["U3"].Value = "Sex";
+                            worksheet.Cells["V3"].Value = "Batteria";
+                            worksheet.Cells["W3"].Value = "Codsoc";
+                            worksheet.Cells["X3"].Value = "corsia";
+                            worksheet.Cells["Y3"].Value = "Cognome1";
+                            worksheet.Cells["Z3"].Value = "Cognome2";
+                            worksheet.Cells["AA3"].Value = "Cognome3";
+                            worksheet.Cells["AB3"].Value = "Cognome4";
+                            worksheet.Cells["AC3"].Value = "equipaggio";
+                            var sex = getCategorySex(group.First()["Categoria2"], group.First()["Categoria"]);
+                            for (int j = 0; j < group.Count(); j++)
+                            {
+                                var atleta = group.ElementAt(j);
+                                worksheet.Cells[$"A{4 + j}"].Value = Int32.Parse(atleta["Acqua"]);
+                                worksheet.Cells[$"B{4 + j}"].Value = Int32.Parse(atleta["Pettorale"]);
+                                worksheet.Cells[$"C{4 + j}"].Value = getSurname(atleta["Nazione"], isTeam);
+                                worksheet.Cells[$"D{4 + j}"].Value = isTeam ? "" : atleta["Atleta1"].Replace("|", " ");
+                                worksheet.Cells[$"E{4 + j}"].Value = getTeamName(atleta["Nazione"]);
+                                worksheet.Cells[$"F{4 + j}"].Value = atleta["Atleta1"].Replace("|", " ");
+                                worksheet.Cells[$"G{4 + j}"].Value = atleta["Atleta2"].Replace("|", " ");
+                                worksheet.Cells[$"H{4 + j}"].Value = atleta["Atleta3"].Replace("|", " ");
+                                worksheet.Cells[$"I{4 + j}"].Value = atleta["Atleta4"].Replace("|", " ");
+                                worksheet.Cells[$"J{4 + j}"].Value = atleta["Atleta5"].Replace("|", " ");
+                                worksheet.Cells[$"K{4 + j}"].Value = atleta["Atleta6"].Replace("|", " ");
+                                worksheet.Cells[$"L{4 + j}"].Value = atleta["Atleta7"].Replace("|", " ");
+                                worksheet.Cells[$"M{4 + j}"].Value = atleta["Atleta8"].Replace("|", " ");
+                                worksheet.Cells[$"N{4 + j}"].Value = atleta["Atleta9"].Replace("|", " ") + " (COX)";
+                                worksheet.Cells[$"O{4 + j}"].Value = getCategoryDescription(atleta["Categoria2"], atleta["Categoria"]);
+                                worksheet.Cells[$"P{4 + j}"].Value = "descr_turno";
+                                worksheet.Cells[$"Q{4 + j}"].Value = atleta["Categoria2"];
+                                worksheet.Cells[$"R{4 + j}"].Value = Int32.Parse(atleta["Batteria"]);
+                                worksheet.Cells[$"S{4 + j}"].Value = !string.IsNullOrEmpty(atleta["Atleta1"]) ? atleta["Atleta1"].Split(splitName)[0] : "";
+                                worksheet.Cells[$"T{4 + j}"].Value = !string.IsNullOrEmpty(atleta["Atleta1"]) ? atleta["Atleta1"].Split(splitName)[1] : "";
+                                worksheet.Cells[$"U{4 + j}"].Value = sex;
+                                worksheet.Cells[$"V{4 + j}"].Value = Int32.Parse(atleta["Batteria"]);
+                                worksheet.Cells[$"W{4 + j}"].Value = atleta["id_squadra"];
+                                worksheet.Cells[$"X{4 + j}"].Value = Int32.Parse(atleta["Acqua"]);
+                                worksheet.Cells[$"Y{4 + j}"].Value = !string.IsNullOrEmpty(atleta["Atleta1"])? atleta["Atleta1"].Split(splitName)[0] : "";
+                                worksheet.Cells[$"Z{4 + j}"].Value = !string.IsNullOrEmpty(atleta["Atleta2"]) ? atleta["Atleta2"].Split(splitName)[0] : "";
+                                worksheet.Cells[$"AA{4 + j}"].Value = !string.IsNullOrEmpty(atleta["Atleta3"]) ? atleta["Atleta3"].Split(splitName)[0] : "";
+                                worksheet.Cells[$"AB{4 + j}"].Value = !string.IsNullOrEmpty(atleta["Atleta4"]) ? atleta["Atleta4"].Split(splitName)[0] : "";
+                                worksheet.Cells[$"AC{4 + j}"].Value = "equipaggio";
+                            }
                         }
                         else
                         {
