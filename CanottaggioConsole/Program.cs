@@ -203,21 +203,19 @@ namespace CanottaggioConsole
                     var buffer = new StringBuilder(16384); //16384 = 16KB
                     if (isNational)
                     {
-
+                        buffer.AppendLine($"Batteria;Acqua;Pettorale;Atleta;Societa;Societa1;Atleta1;Atleta2;Atleta3;Atleta4;soc;Categoria[Categoria2];Descr_Cat");
                     }
                     else
-                    {
                         buffer.AppendLine($"Batteria;Acqua;Pettorale;Flag;Cognome;SecondoNome;Società;Atleta1;Atleta2;Atleta3;Atleta4");
-                    }
                     foreach (var row in fields)
                     {
+                        var isTeam = !string.IsNullOrEmpty(row["Atleta3"].Trim()); //ci sono più di due atleti
                         if (isNational)
                         {
-
+                            buffer.AppendLine($"{row["Batteria"]};{row["Acqua"]};{row["Pettorale"]};Atleta;Societa;Societa1;{row["Atleta1"]};{row["Atleta2"]};{row["Atleta3"]};{row["Atleta4"]};soc;{row["Categoria2"]};{getCategoryDescription(row["Categoria2"],row["Categoria"])}");
                         }
                         else
                         {
-                            var isTeam = !string.IsNullOrEmpty(row["Atleta3"].Trim()); //ci sono più di due atleti
                             var flag = $@"Flags3D\{(getFlagName(row["Nazione"].Trim()))}.png";
                             var teamName = getTeamName(row["Nazione"].Trim());
                             var surname = getSurname(row["Nazione"].Trim(), isTeam);
