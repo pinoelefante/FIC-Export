@@ -41,7 +41,7 @@ namespace CanottaggioConsole
             var national = false;
             var title = string.Empty;
             var base_tvg = string.Empty;
-            bool startFromShell = false;
+            bool startFromShell = args.Length == 6;
 
             AppCredits();
 
@@ -67,9 +67,7 @@ namespace CanottaggioConsole
                 national = Boolean.Parse(args[3]);
                 title = args[4];
                 base_tvg = args[5];
-                startFromShell = true;
             }
-            Debug.WriteLine($"Comando={filename} {separator} {exportType} {national} {title} {base_tvg}");
             loadFileMapping();
             var content = readFile(filename);
             if (content == null || content.Length <= 1)
