@@ -58,13 +58,19 @@ namespace CanottaggioGui
                 process.StartInfo.FileName = "CanottaggioConsole.exe";
                 process.StartInfo.Arguments = $"\"{PathCSV}\" {Separator} {ExportType} {(ExportTypeNation.Equals("Nazionale") ? true : false).ToString()} \"{Title}\" \"{TVGFolder}\"";
                 process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.UseShellExecute = false;
                 process.Start();
                 using (var reader = new StreamReader(process.StandardOutput.BaseStream))
+                using (var reader_errors = new StreamReader(process.StandardError.BaseStream))
                 {
                     process.WaitForExit();
                     var text = process.StandardOutput.ReadToEnd();
                     TextArea += text;
+
+                    var errors = reader_errors.ReadToEnd();
+                    if(!string.IsNullOrEmpty(errors))
+                        TextArea += $"\nERRORI\n{errors}";
                 }
                 TextArea += "---- FINE ESECUZIONE ----\n\n";
             }));
