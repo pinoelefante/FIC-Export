@@ -53,14 +53,21 @@ namespace CanottaggioGui
                     MessageBox.Show("Non è possibile avviare il programma.\nManca: CanottaggioConsole.exe");
                     return;
                 }
-                var process = Process.Start("CanottaggioConsole.exe", $"\"{PathCSV}\" {Separator} {ExportType} {(ExportTypeNation.Equals("Nazionale") ? true : false).ToString()} \"{Title}\" \"{TVGFolder}\"");
-                process.OutputDataReceived += Process_OutputDataReceived;
+                TextArea += "---- INIZIO ESECUZIONE ----\n";
+                var process = new Process();
+                process.StartInfo.FileName = "CanottaggioConsole.exe";
+                process.StartInfo.Arguments = $"\"{PathCSV}\" {Separator} {ExportType} {(ExportTypeNation.Equals("Nazionale") ? true : false).ToString()} \"{Title}\" \"{TVGFolder}\"";
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.UseShellExecute = false;
+                process.Start();
+                using (var reader = new StreamReader(process.StandardOutput.BaseStream))
+                {
+                    process.WaitForExit();
+                    var text = process.StandardOutput.ReadToEnd();
+                    TextArea += text;
+                }
+                TextArea += "---- FINE ESECUZIONE ----\n\n";
             }));
-
-        private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            TextArea += e.Data;
-        }
 
         public RelayCommand SelectCSVFileCommand =>
             _selectCSVCmd ??

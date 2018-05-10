@@ -67,7 +67,7 @@
             <Button Content="Avvia" Width="50" Height="50" Command="{Binding StartAction}"/>
         </StackPanel>
 
-        <TextBox Grid.Row="5" AcceptsReturn="True" AcceptsTab="True" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+        <TextBox Grid.Row="5" Text="{Binding TextArea}" AcceptsReturn="True" AcceptsTab="True" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
 
         <TextBlock Grid.Row="6" Text="Versione 1.0" HorizontalAlignment="Right" Margin="5,0"/>
     </Grid>

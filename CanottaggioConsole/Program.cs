@@ -98,9 +98,11 @@ namespace CanottaggioConsole
             }
             if (!national)
                 VerifyFlagsInt(contentDictionary, base_tvg);
-            Console.WriteLine("\nFile esportato/i. Premere un tasto per chiudere la finestra");
-            if(!startFromShell)
+            if (!startFromShell)
+            {
+                Console.WriteLine("\nFile esportato/i. Premere un tasto per chiudere la finestra");
                 Console.ReadKey();
+            }
         }
         private static void loadFileMapping()
         {
