@@ -52,6 +52,7 @@
                     <sys:String>mispeaker</sys:String>
                     <sys:String>tvg</sys:String>
                     <sys:String>atleti</sys:String>
+                    <sys:String>bandiere</sys:String>
                 </ComboBox.Items>
             </ComboBox>
 
