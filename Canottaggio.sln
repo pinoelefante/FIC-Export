@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27625.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanottaggioConsole", "CanottaggioConsole\CanottaggioConsole.csproj", "{A2459156-600E-46EA-91B1-C94D17CAD54B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanottaggioGui", "CanottaggioGui\CanottaggioGui.csproj", "{C1AA6354-446D-46A6-B3D7-743E2F5CFB0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{A2459156-600E-46EA-91B1-C94D17CAD54B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2459156-600E-46EA-91B1-C94D17CAD54B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2459156-600E-46EA-91B1-C94D17CAD54B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1AA6354-446D-46A6-B3D7-743E2F5CFB0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1AA6354-446D-46A6-B3D7-743E2F5CFB0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1AA6354-446D-46A6-B3D7-743E2F5CFB0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1AA6354-446D-46A6-B3D7-743E2F5CFB0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

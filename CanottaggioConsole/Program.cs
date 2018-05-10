@@ -41,6 +41,7 @@ namespace CanottaggioConsole
             var national = false;
             var title = string.Empty;
             var base_tvg = string.Empty;
+            bool startFromShell = false;
 
             AppCredits();
 
@@ -66,6 +67,7 @@ namespace CanottaggioConsole
                 national = Boolean.Parse(args[3]);
                 title = args[4];
                 base_tvg = args[5];
+                startFromShell = true;
             }
             Debug.WriteLine($"Comando={filename} {separator} {exportType} {national} {title} {base_tvg}");
             loadFileMapping();
@@ -97,7 +99,8 @@ namespace CanottaggioConsole
             if (!national)
                 VerifyFlagsInt(contentDictionary, base_tvg);
             Console.WriteLine("\nFile esportato/i. Premere un tasto per chiudere la finestra");
-            Console.ReadKey();
+            if(!startFromShell)
+                Console.ReadKey();
         }
         private static void loadFileMapping()
         {
