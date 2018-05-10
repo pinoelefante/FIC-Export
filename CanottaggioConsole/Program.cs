@@ -243,7 +243,7 @@ namespace CanottaggioConsole
                         buffer.AppendLine($"Batteria;Acqua;Pettorale;Atleta;Societa;Societa1;Atleta1;Atleta2;Atleta3;Atleta4;soc;Categoria[Categoria2];Descr_Cat");
                     }
                     else
-                        buffer.AppendLine($"Batteria;Acqua;Pettorale;Flag;Cognome;SecondoNome;Società;Atleta1;Atleta2;Atleta3;Atleta4");
+                        buffer.AppendLine($"Batteria;Acqua;Pettorale;Flag;Cognome;SecondoNome;Società;Atleta1;Atleta2;Atleta3;Atleta4;Atleta5;Atleta6;Atleta7;Atleta8;Atleta9");
                     foreach (var row in fields)
                     {
                         var isTeam = !string.IsNullOrEmpty(row["Atleta3"].Trim()); //ci sono più di due atleti
@@ -256,7 +256,7 @@ namespace CanottaggioConsole
                             var flag = $@"Flags3D\{(getFlagName(row["Nazione"].Trim()))}.png";
                             var teamName = getTeamNameInt(row["Nazione"].Trim());
                             var surname = getSurnameInt(row["Nazione"].Trim(), isTeam);
-                            buffer.AppendLine($"{row["Batteria"]};{row["Acqua"]};{row["Pettorale"]};{flag};{surname};{(isTeam ? "" : row["Atleta1"].Replace("|", " "))};{teamName};{row["Atleta1"].Replace("|", " ")};{row["Atleta2"].Replace("|", " ")};{row["Atleta3"].Replace("|", " ")};{row["Atleta4"].Replace("|", " ")};");
+                            buffer.AppendLine($"{row["Batteria"]};{row["Acqua"]};{row["Pettorale"]};{flag};{surname};{(isTeam ? "" : row["Atleta1"].Replace("|", " "))};{teamName};{row["Atleta1"].Replace("|", " ")};{row["Atleta2"].Replace("|", " ")};{row["Atleta3"].Replace("|", " ")};{row["Atleta4"].Replace("|", " ")};{row["Atleta5"].Replace("|", " ")};{row["Atleta6"].Replace("|", " ")};{row["Atleta7"].Replace("|", " ")};{row["Atleta8"].Replace("|", " ")};{row["Atleta9"].Replace("|", " ")};");
                         }
                     }
                     Console.WriteLine($"Salvataggio file {filename} sul desktop");
