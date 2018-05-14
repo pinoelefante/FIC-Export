@@ -240,13 +240,14 @@ namespace CanottaggioConsole
                     var buffer = new StringBuilder(16384); //16384 = 16KB
                     if (isNational)
                     {
+                        Console.WriteLine("ATTENZIONE: L'export nazionale potrebbe non essere corretto in quanto non testato");
                         buffer.AppendLine($"Batteria;Acqua;Pettorale;Atleta;Societa;Societa1;Atleta1;Atleta2;Atleta3;Atleta4;soc;Categoria[Categoria2];Descr_Cat");
                     }
                     else
-                        buffer.AppendLine($"Batteria;Acqua;Pettorale;Flag;Cognome;SecondoNome;Società;Atleta1;Atleta2;Atleta3;Atleta4;Atleta5;Atleta6;Atleta7;Atleta8;Atleta9");
+                        buffer.AppendLine($"Batteria;Acqua;Pettorale;Flag;Cognome;SecondoNome;Società;Atleta1;Atleta2;Atleta3;Atleta4");
                     foreach (var row in fields)
                     {
-                        var isTeam = !string.IsNullOrEmpty(row["Atleta3"].Trim()); //ci sono più di due atleti
+                        var isTeam = row.ContainsKey("Atleta3") && !string.IsNullOrEmpty(row["Atleta3"].Trim()); //ci sono più di due atleti
                         if (isNational)
                         {
                             buffer.AppendLine($"{row["Batteria"]};{row["Acqua"]};{row["Pettorale"]};Atleta;Societa;Societa1;{row["Atleta1"].Replace("|", " ")};{row["Atleta2"].Replace("|", " ")};{row["Atleta3"].Replace("|", " ")};{row["Atleta4"].Replace("|", " ")};{row["Atleta5"].Replace("|", " ")};{row["Atleta6"].Replace("|", " ")};{row["Atleta7"].Replace("|", " ")};{row["Atleta8"].Replace("|", " ")};{row["Atleta9"].Replace("|", " ")};soc;{row["Categoria2"]};{getCategoryDescription(row["Categoria2"],row["Categoria"])}");
@@ -256,7 +257,19 @@ namespace CanottaggioConsole
                             var flag = $@"Flags3D\{(getFlagName(row["Nazione"].Trim()))}.png";
                             var teamName = getTeamNameInt(row["Nazione"].Trim());
                             var surname = getSurnameInt(row["Nazione"].Trim(), isTeam);
-                            buffer.AppendLine($"{row["Batteria"]};{row["Acqua"]};{row["Pettorale"]};{flag};{surname};{(isTeam ? "" : row["Atleta1"].Replace("|", " "))};{teamName};{row["Atleta1"].Replace("|", " ")};{row["Atleta2"].Replace("|", " ")};{row["Atleta3"].Replace("|", " ")};{row["Atleta4"].Replace("|", " ")};{row["Atleta5"].Replace("|", " ")};{row["Atleta6"].Replace("|", " ")};{row["Atleta7"].Replace("|", " ")};{row["Atleta8"].Replace("|", " ")};{row["Atleta9"].Replace("|", " ")};");
+                            buffer.AppendLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10}", 
+                                (row.ContainsKey("Batteria")?row["Batteria"]:""),
+                                (row.ContainsKey("Acqua") ? row["Acqua"] : ""),
+                                (row.ContainsKey("Pettorale") ? row["Pettorale"] : ""),
+                                flag,
+                                surname,
+                                (!isTeam && row.ContainsKey("Atleta1") ? row["Atleta1"].Replace("|", " ") : ""),
+                                teamName,
+                                (row.ContainsKey("Atleta1") ? row["Atleta1"].Replace('|',' ') : ""),
+                                (row.ContainsKey("Atleta2") ? row["Atleta2"].Replace('|', ' ') : ""),
+                                (row.ContainsKey("Atleta3") ? row["Atleta3"].Replace('|', ' ') : ""),
+                                (row.ContainsKey("Atleta4") ? row["Atleta4"].Replace('|', ' ') : "")
+                            ));
                         }
                     }
                     Console.WriteLine($"Salvataggio file {filename} sul desktop");
@@ -375,6 +388,7 @@ namespace CanottaggioConsole
                         worksheet.Cells["A2"].Value = $"Starting list {category}";
                         if (isNational)
                         {
+                            Console.WriteLine("ATTENZIONE: L'export nazionale potrebbe non essere corretto in quanto non testato");
                             worksheet.Cells["A3"].Value = "Acqua";
                             worksheet.Cells["B3"].Value = "Pettorale";
                             worksheet.Cells["C3"].Value = "Atleta";
@@ -465,15 +479,15 @@ namespace CanottaggioConsole
                                 worksheet.Cells[$"D{4 + j}"].Value = getSurnameInt(atleta["Nazione"], isTeam);
                                 worksheet.Cells[$"E{4 + j}"].Value = isTeam ? "" : atleta["Atleta1"].Replace("|", " ");
                                 worksheet.Cells[$"F{4 + j}"].Value = getTeamNameInt(atleta["Nazione"]);
-                                worksheet.Cells[$"G{4 + j}"].Value = atleta["Atleta1"].Replace("|", " ");
-                                worksheet.Cells[$"H{4 + j}"].Value = atleta["Atleta2"].Replace("|", " ");
-                                worksheet.Cells[$"I{4 + j}"].Value = atleta["Atleta3"].Replace("|", " ");
-                                worksheet.Cells[$"J{4 + j}"].Value = atleta["Atleta4"].Replace("|", " ");
-                                worksheet.Cells[$"K{4 + j}"].Value = atleta["Atleta5"].Replace("|", " ");
-                                worksheet.Cells[$"L{4 + j}"].Value = atleta["Atleta6"].Replace("|", " ");
-                                worksheet.Cells[$"M{4 + j}"].Value = atleta["Atleta7"].Replace("|", " ");
-                                worksheet.Cells[$"N{4 + j}"].Value = atleta["Atleta8"].Replace("|", " ");
-                                worksheet.Cells[$"O{4 + j}"].Value = atleta["Atleta9"].Replace("|", " ") + " (COX)";
+                                worksheet.Cells[$"G{4 + j}"].Value = atleta.ContainsKey("Atleta1") ? atleta["Atleta1"].Replace("|", " ") : "";
+                                worksheet.Cells[$"H{4 + j}"].Value = atleta.ContainsKey("Atleta2") ? atleta["Atleta2"].Replace("|", " ") : "";
+                                worksheet.Cells[$"I{4 + j}"].Value = atleta.ContainsKey("Atleta3") ? atleta["Atleta3"].Replace("|", " ") : "";
+                                worksheet.Cells[$"J{4 + j}"].Value = atleta.ContainsKey("Atleta4") ? atleta["Atleta4"].Replace("|", " ") : "";
+                                worksheet.Cells[$"K{4 + j}"].Value = atleta.ContainsKey("Atleta5") ? atleta["Atleta5"].Replace("|", " ") : "";
+                                worksheet.Cells[$"L{4 + j}"].Value = atleta.ContainsKey("Atleta6") ? atleta["Atleta6"].Replace("|", " ") : "";
+                                worksheet.Cells[$"M{4 + j}"].Value = atleta.ContainsKey("Atleta7") ? atleta["Atleta7"].Replace("|", " ") : "";
+                                worksheet.Cells[$"N{4 + j}"].Value = atleta.ContainsKey("Atleta8") ? atleta["Atleta8"].Replace("|", " ") : "";
+                                worksheet.Cells[$"O{4 + j}"].Value = atleta.ContainsKey("Atleta9") ? atleta["Atleta9"].Replace("|", " ") + " (COX)" : "";
                                 worksheet.Cells[$"P{4 + j}"].Value = atleta["Categoria"];
                                 worksheet.Cells[$"Q{4 + j}"].Value = getCategoryDescription(atleta["Categoria"], atleta["Categoria2"]);
                                 worksheet.Cells[$"R{4 + j}"].Value = Int32.Parse(atleta["Batteria"]);
