@@ -9,16 +9,19 @@ AND;AND;Andorra
 ANG;AGO;Angola
 ANT;ATG;Antigua and Barbuda
 ARG;ARG;Argentina
+ARG;ARG 1;Argentina 1
 ARM;ARM;Armenia
 ARU;ABW;Aruba
 ASM;ASM;American Samoa
 AUS;AUS;Australia
+AUS;AUS 1;Australia 1
 AUS;AUS S;Trinity College Australia
 AUS;AUS S1;Trinity College Australia 1
 AUS;AUS S2;Trinity College Australia 2
 AUS;AUS S3;Trinity College Australia 3
 AUS;AUS S4;Trinity College Australia 4
 AUT;AUT;Austria
+AUT;AUT 1;Austria 1
 AZE;AZE;Azerbaijan
 BAH;BHS;Bahamas
 BAN;BGD;Bangladesh
@@ -37,6 +40,7 @@ BMU;BMU;Bermuda
 BOL;BOL;Bolivia
 BOT;BWA;Botswana
 BRA;BRA;Brazil
+BRA;BRA 1;Brazil 1
 BRN;BHR;Bahrein
 BRU;BRN;Brunei Darussalam
 BUL;BGR;Bulgaria
@@ -88,6 +92,7 @@ ESP;ESP 1;Spain 1
 ESP;ESP 2;Spain 2
 ESP;ESP 3;Spain 3
 ESP;ESP 4;Spain 4
+ESP;ESP CLUB 1;Spain Club 1
 EST;EST;Estonia
 EST;EST 1;Estonia 1
 ETH;ETH;Ethiopia
@@ -97,12 +102,15 @@ FIN;FIN S;Finland Club
 FJI;FJI;Fiji
 FLK;FLK;Falkland Islands (Malvinas)
 FRA;FRA;France
+FRA;FRA 1;France 1
 FRA;FRA 2;France 2
 FRO;FRO;Faroe Island
 FSM;FSM;Micronesia Federal States of
 GAB;GAB;Gabon
 GBM;GBM;Isle of Man
 GBR;GBR;United Kingdom
+GBR;GBR 1;United Kingdom 1
+GBR;GBR 2;United Kingdom 2
 GCA;GTM;Guatemala
 GE;GE;Genova
 GEO;GEO;Georgia
@@ -191,7 +199,7 @@ LAR;LBY;Libyan Arab Jamahiriya
 LAT;LAT 1;Latvia
 LAT;LVA;Latvia
 LAT;LVA 1;Latvia
-LBA;LBA;"	Libyan"
+LBA;LBA;Libyan
 LBR;LBR;Liberia
 LIE;LIE;Liechtenstein
 LST;LSO;Lesotho
@@ -229,6 +237,7 @@ NED;NED 1;Netherlands 1
 NED;NED 2;Netherlands 2
 NED;NLD;Netherlands
 NEP;NPL;Nepal
+NGR;NGR 1;Nigeria
 NIC;NIC;Nicaragua
 NIG;NER;Niger
 NIU;NIU;Niue
@@ -241,6 +250,7 @@ OMN;OMN;Oman
 PAK;PAK;Pakistan
 PAL;;Palestin
 PAN;PAN;Panama
+PAR;PAR 1;Paraguay 1
 PAU;PLW;Palau
 PCN;PCN;Pitcairn
 PER;PER;Peru
@@ -248,6 +258,7 @@ PI;PI;Pisa
 PLO;PYF;French Polynesia
 PNG;PNG;Papua New Guinea
 POL;POL;Poland
+POL;POL 1;Poland 1
 POR;POR;Portugal
 POR;POR 1;Portugal 1
 POR;POR 2;Portugal 2
@@ -299,6 +310,7 @@ SPM;SPM;St. Pierre and Miquelon
 SRB;SRB;Serbia
 SRB;SRB 1;Serbia 1
 SRB;SRB 2;Serbia 2
+SRI;SRI 1;Sri Lanka
 STP;STP;Sao Tome & Principe
 SUD;SDN;Sudan
 SUI;SUI;Switzerland
@@ -306,6 +318,8 @@ SUI;SUI 2;Switzerland 2
 SUI;SUI 4;Switzerland 4
 SUI;SUI S;Runderclub Thalwil
 SUI;SUI S1;Switzerland Club 1
+SUI;SUI BERN 1;Switzerland Bern 1
+SUI;SUI ZUG 1;Switzerland Zug 1
 SWE;SWE;Sweden
 SWE;SWE 1;Sweden 1
 SYC;SYC;Seychelles
@@ -334,7 +348,9 @@ UKR;UKR 3;Ukraine 3
 UKR;UKR 4;Ukraine 4
 UKR;UKR 5;Ukraine 5
 URU;URY;Uruguay
+URU;URU 1;Uruguay 1
 USA;USA;United States of America
+USA;USA 1;United States of America 1
 USA;USA S;United States of America
 UZB;UZB;Uzbekistan
 VAN;VUT;Vanuatu
