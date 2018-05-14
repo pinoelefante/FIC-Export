@@ -226,7 +226,7 @@ namespace CanottaggioConsole
                     rowDictionary.Add(file_config[header_assoc[index]], rowContent[index]);
                 listContent.Add(rowDictionary);
             }
-            return listContent.OrderBy(x => x["Batteria"]).ThenBy(x=>x["Acqua"]).ToList();
+            return listContent.OrderBy(x => Int32.Parse(x["Batteria"])).ThenBy(x=> Int32.Parse(x["Acqua"])).ToList();
         }
         private static void MiSpeakerConverter(List<Dictionary<string, string>> fields, bool isNational)
         {
