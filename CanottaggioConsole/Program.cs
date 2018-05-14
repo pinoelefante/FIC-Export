@@ -89,11 +89,10 @@ namespace CanottaggioConsole
             }
             if (!national)
                 VerifyFlagsInt(contentDictionary, base_tvg);
-            //if (!startFromShell)
-            //{
-                Console.WriteLine("\nFile esportato/i. Premere un tasto per chiudere la finestra");
-                Console.ReadKey();
-            //}
+#if DEBUG
+            Console.WriteLine("\nFile esportato/i. Premere un tasto per chiudere la finestra");
+            Console.ReadKey();
+#endif
         }
         private static void loadFileMapping()
         {
@@ -163,7 +162,7 @@ namespace CanottaggioConsole
         private static void loadCategories()
         {
             categories.Clear();
-            var lines = File.ReadAllLines("categorie.csv");
+            var lines = File.ReadAllLines(@"data\categorie.csv");
             var splitVal = new char[] { ';' };
             foreach (var line in lines)
             {
@@ -174,7 +173,7 @@ namespace CanottaggioConsole
         private static void loadNations()
         {
             nations.Clear();
-            var lines = File.ReadAllLines("nazioni.csv");
+            var lines = File.ReadAllLines(@"data\nazioni.csv");
             var splitVal = new char[] { ';' };
             foreach(var line in lines)
             {
@@ -185,7 +184,7 @@ namespace CanottaggioConsole
         private static void loadTeams()
         {
             teams.Clear();
-            var lines = File.ReadAllLines("teams.csv");
+            var lines = File.ReadAllLines(@"data\teams.csv");
             var splitVal = new char[] { ';' };
             foreach(var line in lines)
             {
