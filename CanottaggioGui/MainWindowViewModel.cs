@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using CanottaggioGui.Data;
+using CanottaggioGui.DataConverters;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,22 +12,54 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace CanottaggioGui
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
+        private AppDataLoader dataLoader;
+        private MiSpeakerConverter mispeaker;
+        private TVGConverter tvg;
+        public MainWindowViewModel()
+        {
+            Task.Factory.StartNew(() =>
+            {
+                dataLoader = new AppDataLoader();
+                var categories = dataLoader.LoadCategoriesFile();
+                var nations = dataLoader.LoadNationsFile();
+                var teams = dataLoader.LoadTeamsFile();
+                var fileConfig = dataLoader.LoadFileMappingConfig();
+                mispeaker = new MiSpeakerConverter()
+                {
+                    Categories = categories,
+                    Nations = nations,
+                    Teams = teams
+                };
+                tvg = new TVGConverter()
+                {
+                    Categories = categories,
+                    Nations = nations,
+                    Teams = teams,
+                    BaseFolder = TVGFolder
+                };
+                LoadFileConfig();
+                IsProgramLoaded = true;
+            });
+        }
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private string _pathCsv = string.Empty, _tvgFolder = @"C:\tvg\Canottaggio_Int", _title, _separator, _exportType, _exportTypeNation, textArea;
+        private string _pathCsv = string.Empty, _tvgFolder = @"C:\tvg\Canottaggio_Int", _title, _exportType, _exportTypeNation, textArea;
+        private bool _loaded = false;
         
         public string PathCSV { get => _pathCsv; set => Set(ref _pathCsv, value); }
         public string TVGFolder { get => _tvgFolder; set => Set(ref _tvgFolder, value); }
         public string Title { get => _title; set => Set(ref _title, value); }
-        public string Separator { get => _separator; set => Set(ref _separator, value); }
         public string ExportType { get => _exportType; set => Set(ref _exportType, value); }
         public string ExportTypeNation { get => _exportTypeNation; set => Set(ref _exportTypeNation, value); }
         public string TextArea { get => textArea; set => Set(ref textArea, value); }
+
+        public bool IsProgramLoaded { get => _loaded; set => Set(ref _loaded, value); }
         
         private RelayCommand _startCmd, _selectCSVCmd, _selectTVGCmd;
 
@@ -33,7 +67,9 @@ namespace CanottaggioGui
             _startCmd ??
             (_startCmd = new RelayCommand(() =>
             {
-                if(string.IsNullOrEmpty(Title))
+                TextArea = string.Empty;
+                var startTime = DateTime.Now;
+                if (string.IsNullOrEmpty(Title))
                 {
                     MessageBox.Show("Inserire un titolo");
                     return;
@@ -48,31 +84,36 @@ namespace CanottaggioGui
                     MessageBox.Show("Scegliere una cartella valida di TVG");
                     return;
                 }
-                if (!File.Exists("CanottaggioConsole.exe"))
+                TextArea += $"---- INIZIO ESECUZIONE ({startTime.Hour.ToString("D2")}:{startTime.Minute.ToString("D2")}:{startTime.Second.ToString("D2")})----\n";
+                var isNazionale = ExportTypeNation.Equals("Nazionale") ? true : false;
+                var file_content = tvg.parseFileExcel(PathCSV);
+                switch (ExportType)
                 {
-                    MessageBox.Show("Non è possibile avviare il programma.\nManca: CanottaggioConsole.exe");
-                    return;
+                    case "mispeaker":
+                        mispeaker.Convert(file_content, isNazionale);
+                        break;
+                    case "tvg":
+                        tvg.Convert(file_content, isNazionale, Title);
+                        break;
+                    case "atleti":
+                        tvg.AthletesCreditsConvert(file_content);
+                        break;
+                    case "tutto":
+                        mispeaker.Convert(file_content, isNazionale);
+                        tvg.Convert(file_content, isNazionale, Title);
+                        tvg.AthletesCreditsConvert(file_content);
+                        break;
                 }
-                TextArea += "---- INIZIO ESECUZIONE ----\n";
-                var process = new Process();
-                process.StartInfo.FileName = "CanottaggioConsole.exe";
-                process.StartInfo.Arguments = $"\"{PathCSV}\" {Separator} {ExportType} {(ExportTypeNation.Equals("Nazionale") ? true : false).ToString()} \"{Title}\" \"{TVGFolder}\"";
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.UseShellExecute = false;
-                process.Start();
-                using (var reader = new StreamReader(process.StandardOutput.BaseStream))
-                using (var reader_errors = new StreamReader(process.StandardError.BaseStream))
-                {
-                    process.WaitForExit();
-                    var text = process.StandardOutput.ReadToEnd();
-                    TextArea += text;
+                if (!isNazionale)
+                    tvg.VerifyFlagsInt(file_content);
 
-                    var errors = reader_errors.ReadToEnd();
-                    if(!string.IsNullOrEmpty(errors))
-                        TextArea += $"\nERRORI\n{errors}";
-                }
-                TextArea += "---- FINE ESECUZIONE ----\n\n";
+                var mispeakerText = mispeaker.GetTextFromStream();
+                var tvgText = tvg.GetTextFromStream();
+                var endTime = DateTime.Now;
+                var diff = endTime.Subtract(startTime);
+                TextArea += mispeakerText;
+                TextArea += tvgText;
+                TextArea += $"---- FINE ESECUZIONE (Durata: {diff.TotalSeconds} secondi) ----\n\n";
             }));
 
         public RelayCommand SelectCSVFileCommand =>
@@ -95,13 +136,28 @@ namespace CanottaggioGui
                 dialog.CheckPathExists = false;
                 dialog.InitialDirectory = @"C:\tvg";
                 if (dialog.ShowDialog() == true)
+                {
                     TVGFolder = dialog.FileName.Substring(0, dialog.FileName.LastIndexOf("ficr"));
+                    tvg.BaseFolder = TVGFolder;
+                }
             }));
 
         private void Set<K>(ref K k, K value, [CallerMemberName]string fieldName = "")
         {
             k = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(fieldName));
+            Dispatcher.CurrentDispatcher.Invoke(() =>
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(fieldName));
+            });
+        }
+        public void LoadFileConfig()
+        {
+            var config = dataLoader.LoadFileMappingConfig();
+            if(config != null)
+            {
+                mispeaker.FileConfig = config;
+                tvg.FileConfig = config;
+            }
         }
     }
     public class RelayCommand : ICommand

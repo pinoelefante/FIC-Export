@@ -1,5 +1,4 @@
-﻿using CanottaggioConsole.DataConverters;
-using OfficeOpenXml;
+﻿using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +15,7 @@ namespace CanottaggioGui.DataConverters
 
         public override bool ConvertInternational(List<Dictionary<string, string>> fields, string title = "")
         {
-            OutputStream.WriteLine("\nAvvio esportazione TVG Internazionale");
+            OutputStream.AppendLine("\nAvvio esportazione TVG Internazionale");
             try
             {
                 var groups = fields.GroupBy(x => x["Batteria"]);
@@ -28,7 +27,7 @@ namespace CanottaggioGui.DataConverters
                         var batteryNum = group.First()["Batteria"];
                         if (string.IsNullOrEmpty(batteryNum))
                         {
-                            OutputStream.WriteLine("Verifica che il file excel non contenga righe vuote");
+                            OutputStream.AppendLine("Verifica che il file excel non contenga righe vuote");
                             continue;
                         }
                         var category = group.First()["Categoria"];
@@ -82,21 +81,21 @@ namespace CanottaggioGui.DataConverters
                     var filename = string.Format("Export_TVG_Int_{0:D2}{1:D2}{2:D4}.xlsx", dateNow.Day, dateNow.Month, dateNow.Year);
                     var fileinfo = new FileInfo($@"{GetDesktopPath()}\{filename}");
                     excelPackage.SaveAs(fileinfo);
-                    OutputStream.WriteLine($"Il file {filename} e' stato salvato sul desktop");
-                    OutputStream.WriteLine("Esportazione TVG completata con successo");
+                    OutputStream.AppendLine($"Il file {filename} e' stato salvato sul desktop");
+                    OutputStream.AppendLine("Esportazione TVG completata con successo");
                     return true;
                 }
             }
             catch (Exception e)
             {
-                OutputStream.WriteLine($"Si e' verificato un errore durante l'esportazione di TVG\n{e.Message}\n{e.StackTrace}");
+                OutputStream.AppendLine($"Si e' verificato un errore durante l'esportazione di TVG\n{e.Message}\n{e.StackTrace}");
                 return false;
             }
         }
 
         public override bool ConvertNational(List<Dictionary<string, string>> fields, string title = "")
         {
-            OutputStream.WriteLine("\nAvvio esportazione TVG Nazionale");
+            OutputStream.AppendLine("\nAvvio esportazione TVG Nazionale");
             try
             {
                 var groups = fields.GroupBy(x => x["Batteria"]);
@@ -108,7 +107,7 @@ namespace CanottaggioGui.DataConverters
                         var batteryNum = group.First()["Batteria"];
                         if (string.IsNullOrEmpty(batteryNum))
                         {
-                            OutputStream.WriteLine("Verifica che il file excel non contenga righe vuote");
+                            OutputStream.AppendLine("Verifica che il file excel non contenga righe vuote");
                             continue;
                         }
                         var category = group.First()["Categoria"];
@@ -117,7 +116,7 @@ namespace CanottaggioGui.DataConverters
                         var worksheet = excelPackage.Workbook.Worksheets.Add(batteryNum);
                         worksheet.Cells["A1"].Value = title;
                         worksheet.Cells["A2"].Value = $"Starting list {category}";
-                        OutputStream.WriteLine("ATTENZIONE: L'export nazionale potrebbe non essere corretto in quanto non testato");
+                        OutputStream.AppendLine("ATTENZIONE: L'export nazionale potrebbe non essere corretto in quanto non testato");
                         worksheet.Cells["A3"].Value = "Acqua";
                         worksheet.Cells["B3"].Value = "Pettorale";
                         worksheet.Cells["C3"].Value = "Atleta";
@@ -187,20 +186,20 @@ namespace CanottaggioGui.DataConverters
                     var filename = string.Format("Export_TVG_Naz_{0:D2}{1:D2}{2:D4}.xlsx", dateNow.Day, dateNow.Month, dateNow.Year);
                     var fileinfo = new FileInfo($@"{GetDesktopPath()}\{filename}");
                     excelPackage.SaveAs(fileinfo);
-                    OutputStream.WriteLine($"Il file {filename} e' stato salvato sul desktop");
-                    OutputStream.WriteLine("Esportazione TVG completata con successo");
+                    OutputStream.AppendLine($"Il file {filename} e' stato salvato sul desktop");
+                    OutputStream.AppendLine("Esportazione TVG completata con successo");
                     return true;
                 }
             }
             catch (Exception e)
             {
-                OutputStream.WriteLine($"Si e' verificato un errore durante l'esportazione di TVG\n{e.Message}\n{e.StackTrace}");
+                OutputStream.AppendLine($"Si e' verificato un errore durante l'esportazione di TVG\n{e.Message}\n{e.StackTrace}");
                 return false;
             }
         }
         public void AthletesCreditsConvert(List<Dictionary<string, string>> fields)
         {
-            OutputStream.WriteLine("\nCarico la lista degli atleti");
+            OutputStream.AppendLine("\nCarico la lista degli atleti");
             var list = new List<string>();
             foreach (var dict in fields)
             {
@@ -223,14 +222,14 @@ namespace CanottaggioGui.DataConverters
                 var sheet = excel.Workbook.Worksheets.Add("Atleti");
                 for (int i = 0; i < list.Count; i++)
                     sheet.Cells[$"A{(i + 1)}"].Value = list[i];
-                OutputStream.WriteLine($"Salvo la lista degli atleti sul desktop nel file {filename}");
+                OutputStream.AppendLine($"Salvo la lista degli atleti sul desktop nel file {filename}");
                 var fileinfo = new FileInfo($@"{GetDesktopPath()}\{filename}");
                 excel.SaveAs(fileinfo);
             }
         }
         public void VerifyFlagsInt(List<Dictionary<string, string>> contents)
         {
-            OutputStream.WriteLine("\nVerifico la presenza dei file delle bandiere");
+            OutputStream.AppendLine("\nVerifico la presenza dei file delle bandiere");
             Dictionary<string, bool> verifyStatus = new Dictionary<string, bool>();
             foreach (var atl in contents)
             {
@@ -243,7 +242,7 @@ namespace CanottaggioGui.DataConverters
                         var flagExists = File.Exists(path);
                         verifyStatus.Add(flag, flagExists);
                         if (!flagExists)
-                            OutputStream.WriteLine($"Bandiera non presente ({flag})");
+                            OutputStream.AppendLine($"Bandiera non presente ({flag})");
                     }
                 }
             }

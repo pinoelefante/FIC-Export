@@ -5,15 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CanottaggioConsole.DataConverters
+namespace CanottaggioGui.DataConverters
 {
     public class MiSpeakerConverter : ConverterBasics
     {
-        public string CSVSeparator { get; set; }
-
         public override bool ConvertInternational(List<Dictionary<string, string>> fields, string title = "")
         {
-            OutputStream.WriteLine("\nAvvio esportazione MiSpeaker Internazionale");
+            OutputStream.AppendLine("\nAvvio esportazione MiSpeaker Internazionale");
             var now = DateTime.Now;
             var filename = string.Format("Export_MiSpeaker_Int_{0:D2}{1:D2}{2:D4}.csv", now.Day, now.Month, now.Year);
             try
@@ -42,22 +40,22 @@ namespace CanottaggioConsole.DataConverters
                             (row.ContainsKey("Atleta4") && !string.IsNullOrEmpty(row["Atleta4"]) ? row["Atleta4"].Replace('|', ' ') : "")
                         ));
                     }
-                    OutputStream.WriteLine($"Salvataggio file {filename} sul desktop");
+                    OutputStream.AppendLine($"Salvataggio file {filename} sul desktop");
                     file.Write(buffer.ToString());
                 }
-                OutputStream.WriteLine("Esportazione MiSpeaker completata con successo");
+                OutputStream.AppendLine("Esportazione MiSpeaker completata con successo");
                 return true;
             }
             catch (Exception e)
             {
-                OutputStream.WriteLine($"Si e' verificato un errore durante l'esportazione di MiSpeaker\n{e.Message}\n{e.StackTrace}");
+                OutputStream.AppendLine($"Si e' verificato un errore durante l'esportazione di MiSpeaker\n{e.Message}\n{e.StackTrace}");
                 return false;
             }
         }
 
         public override bool ConvertNational(List<Dictionary<string, string>> fields, string title = "")
         {
-            OutputStream.WriteLine("\nAvvio esportazione MiSpeaker");
+            OutputStream.AppendLine("\nAvvio esportazione MiSpeaker");
             var now = DateTime.Now;
             var filename = string.Format("Export_MiSpeaker_Naz_{0:D2}{1:D2}{2:D4}.csv", now.Day, now.Month, now.Year);
             try
@@ -65,22 +63,22 @@ namespace CanottaggioConsole.DataConverters
                 using (var file = new StreamWriter(new FileStream($@"{GetDesktopPath()}\{filename}", FileMode.Create), Encoding.UTF8))
                 {
                     var buffer = new StringBuilder(16384); //16384 = 16KB
-                    OutputStream.WriteLine("ATTENZIONE: L'export nazionale potrebbe non essere corretto in quanto non testato");
+                    OutputStream.AppendLine("ATTENZIONE: L'export nazionale potrebbe non essere corretto in quanto non testato");
                     buffer.AppendLine($"Batteria;Acqua;Pettorale;Atleta;Societa;Societa1;Atleta1;Atleta2;Atleta3;Atleta4;soc;Categoria[Categoria2];Descr_Cat");
                     foreach (var row in fields)
                     {
                         var isTeam = row.ContainsKey("Atleta3") && !string.IsNullOrEmpty(row["Atleta3"]); //ci sono più di due atleti
                         buffer.AppendLine($"{row["Batteria"]};{row["Acqua"]};{row["Pettorale"]};Atleta;Societa;Societa1;{row["Atleta1"].Replace("|", " ")};{row["Atleta2"].Replace("|", " ")};{row["Atleta3"].Replace("|", " ")};{row["Atleta4"].Replace("|", " ")};{row["Atleta5"].Replace("|", " ")};{row["Atleta6"].Replace("|", " ")};{row["Atleta7"].Replace("|", " ")};{row["Atleta8"].Replace("|", " ")};{row["Atleta9"].Replace("|", " ")};soc;{row["Categoria2"]};{GetCategoryDescription(row["Categoria2"], row["Categoria"])}");
                     }
-                    OutputStream.WriteLine($"Salvataggio file {filename} sul desktop");
+                    OutputStream.AppendLine($"Salvataggio file {filename} sul desktop");
                     file.Write(buffer.ToString());
                 }
-                OutputStream.WriteLine("Esportazione MiSpeaker completata con successo");
+                OutputStream.AppendLine("Esportazione MiSpeaker completata con successo");
                 return true;
             }
             catch (Exception e)
             {
-                OutputStream.WriteLine($"Si e' verificato un errore durante l'esportazione di MiSpeaker\n{e.Message}\n{e.StackTrace}");
+                OutputStream.AppendLine($"Si e' verificato un errore durante l'esportazione di MiSpeaker\n{e.Message}\n{e.StackTrace}");
                 return false;
             }
         }
