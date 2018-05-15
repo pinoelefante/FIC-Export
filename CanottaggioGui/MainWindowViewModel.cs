@@ -76,7 +76,7 @@ namespace CanottaggioGui
                 }
                 if(!File.Exists(PathCSV))
                 {
-                    MessageBox.Show("Scegliere un file CSV");
+                    MessageBox.Show("Scegliere un file Excel (xlsx)");
                     return;
                 }
                 if (!Directory.Exists(TVGFolder))
@@ -121,7 +121,7 @@ namespace CanottaggioGui
             (_selectCSVCmd = new RelayCommand(() =>
             {
                 var dialog = new OpenFileDialog();
-                dialog.Filter = "csv (*.csv)|*.csv";
+                dialog.Filter = "Excel (*.xlsx)|*.xlsx";
                 if(dialog.ShowDialog() == true)
                     PathCSV = dialog.FileName;
             }));
