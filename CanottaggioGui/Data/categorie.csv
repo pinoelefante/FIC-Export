@@ -1,0 +1,146 @@
+LTAO4+;;O
+1XAM;Singolo Adaptive as Maschile;M
+1XCDF;Singolo Cadetti Femminile;F
+1XCDM;Singolo Cadetti Maschile;M
+1XESF;Singolo Esordienti-Junior Femminile;F
+1XESM;Singolo Esordienti-Junior Maschile;M
+1XGRF;Singolo Ragazzi Femminile;F
+1XGRM;Singolo Ragazzi Maschile;M
+1XJNF;Singolo Junior Femminile;F
+1XJNM;Singolo Junior Maschile;M
+1XLBF;Singolo Pesi Leggeri U23 Femminile;F
+1XLBM;Singolo Pesi Leggeri U23 Maschile;M
+1XLGF;Singolo Pesi Leggeri Femminile;F
+1XLGM;Singolo Pesi Leggeri Maschile;M
+1XSAF;Singolo Senior A Femminile;F
+1XSAM;Singolo Senior A Maschile;M
+1XSBF;Singolo U23;F
+1XSBM;Singolo U23;M
+1XTM;Singolo Adaptive Ta Maschile;M
+2+CDF;Due con Cadetti Femminile;F
+2+CDM;Due con Cadetti Maschile;M
+2+JNF;Due con Junior Femminile;F
+2+JNM;Due con Junior Maschile;M
+2+SAF;Due con Senior A Femminile;F
+2+SAM;Due con Senior A Maschile;M
+2+SBF;Due con U23 Femminile;F
+2+SBM;Due con U23 Maschile;M
+2-CDF;Due senza Cadetti Femminile;F
+2-CDM;Due senza Cadetti Maschile;M
+2-GRF;Due senza Ragazzi Femminile;F
+2-GRM;Due senza Ragazzi Maschile;M
+2-JNF;Due senza Junior Femminile;F
+2-JNM;Due senza Junior Maschile;M
+2-LBF;Due senza Pesi Leggeri U23 Femminile;F
+2-LBM;Due senza Pesi Leggeri U23 Maschile;M
+2-LGF;Due senza Pesi Leggeri Femminile;F
+2-LGM;Due senza Pesi Leggeri Maschile;M
+2-SAF;Due senza Senior Femminile;F
+2-SAM;Due senza Senior a Maschile;M
+2-SBF;Due senza U23 Femminile;F
+2-SBM;Due senza U23 Maschile;M
+2XCDF;Doppio Cadetti Femminile;F
+2XCDM;Doppio Cadetti Maschile;M
+2XESF;Doppio Esordienti Femminile;F
+2XESM;Doppio Esordienti Maschile;M
+2XGRF;Doppio Ragazzi Femminile;F
+2XGRM;Doppio Ragazzi Maschile;M
+2XJNF;Doppio Junior Femminile;F
+2XJNM;Doppio Junior Maschile;M
+2XLBF;Doppio Pesi Leggeri U23;F
+2XLBM;Doppio Pesi Leggeri U23 Maschile;M
+2XLGF;Doppio Pesi Leggeri Femminile;F
+2XLGM;Doppio Pesi Leggeri Maschile;M
+2XSAF;Doppio Senior A Femminile;F
+2XSAM;Doppio Senior A Maschile;M
+2XSBF;Doppio U23 Femminile;F
+2XSBM;Doppio U23 Maschile;M
+4+CDF;Quattro con Cadetti Femminile;F
+4+CDM;Quattro con Cadetti Maschile;M
+4+ESF;Quattro con Esordienti Femminile;F
+4+ESM;Quattro con Esordienti Maschile;M
+4+GRF;Quattro con Ragazzi Femminile;F
+4+GRM;Quattro con Ragazzi Maschile;M
+4+JNF;Quattro con Junior Femminile;F
+4+JNM;Quattro con Junior Maschile;M
+4+LO;Quattro con Adaptive Lta O;M
+4+SAF;Quattro con Senior A Femminile;F
+4+SAM;Quattro con Senior A Maschile;M
+4+SBF;Quattro con U23 Femminile;F
+4+SBM;Quattro con U23 Maschile;M
+4-CDF;Quattro senza Cadetti Femminile;F
+4-CDM;Quattro senza Cadetti Maschile;M
+4GKO;GIG a Quattro Adaptive Lta ID O;M
+4-GRF;Quattro senza Ragazzi Femminile;F
+4-GRM;Quattro senza Ragazzi Maschile;M
+4-JNF;Quattro senza Junior Femminile;F
+4-JNM;Quattro senza Junior Maschile;M
+4-LBF;Quattro senza Pesi Leggeri U23;F
+4-LBM;Quattro senza Pesi Leggeri U23;M
+4-LGM;Quattro senza Pesi Leggeri Maschile;M
+4-SAF;Quattro senza Senior Femminile;F
+4-SAM;Quattro senza Senior A Maschile;M
+4-SBF;Quattro senza U23 Femminile;F
+4-SBM;Quattro senza U23 Maschile;M
+4XCDF;Quattro di Coppia Cadetti Femminile;F
+4XCDM;Quattro di Coppia Cadetti Maschile;M
+4XGRF;Quattro di Coppia Ragazzi Femminile;F
+4XGRM;Quattro di Coppia Ragazzi Maschile;M
+4XJNF;Quattro di Coppia Junior Femminile;F
+4XJNM;Quattro di Coppia Junior Maschile;M
+4XLBF;Quattro di Coppia Pesi Leggeri;F
+4XLBM;Quattro di Coppia Pesi Leggeri;M
+4XLGF;Quattro di Coppia Pesi Leggeri;F
+4XLGM;Quattro di Coppia Pesi Leggeri;M
+4XSAF;Quattro di Coppia Senior Femminile;F
+4XSAM;Quattro di Coppia Senior A Maschile;M
+4XSBF;Quattro di Coppia U23 Femminile;F
+4XSBM;Quattro di Coppia U23 Maschile;M
+8+CDF;Otto Cadetti Femminile;F
+8+CDM;Otto Cadetti Maschile;M
+8+GRF;Otto Ragazzi Femminile;F
+8+GRM;Otto Ragazzi Maschile;M
+8+JNF;Otto con Junior Femminile;F
+8+JNM;Otto con Junior Maschile;M
+8+LGF;Otto con Pesi Leggeri Femminile;F
+8+LGM;Otto con Pesi Leggeri Maschile;M
+8+SAF;Otto con Senior Femminile;F
+8+SAM;Otto con Senior A Maschile;M
+8+SBF;Otto con U23 Femminile;F
+8+SBM;Otto con U23 Maschile;M
+JM1X;SINGLE SCULLS;M
+JM2-;PAIR;M
+JW1X;SINGLE SCULLS;F
+JW2X;DOUBLE SCULLS;F
+LM1X;SINGLE SCULLS;M
+LM2-;PAIR;M
+M1X;SINGLE SCULLS;M
+M2-;PAIR;M
+M2X;DOUBLE SCULLS;M
+M4-;FOUR;M
+W1X;SINGLE SCULLS;F
+LW1X;SINGLE SCULLS;F
+JW2-;PAIR;F
+W2-;PAIR;F
+JM2X;DOUBLE SCULLS;M
+LW2X;DOUBLE SCULLS;F
+LM2X;DOUBLE SCULLS;M
+W2X;DOUBLE SCULLS;F
+LM4-;FOUR;M
+M4X;QUADRUPLE SCULLS;M
+M8+;EIGHT;M
+W4X;FOUR;F
+ASW1X;;F
+ASM1X;;M
+W4-;FOUR;F
+PR1M1X;SINGLE SCULLS PR1;M
+PR1W1X;SINGLE SCULLS PR1;F
+PR3M2-;PAIR PR3;M
+PR3W2-;PAIR PR3;F
+PR2W1X;SINGLE SCULLS PR2;F
+PR2M1X;SINGLE SCULLS PR2;M
+PR2O2X;DOUBLE SCULLS PR2;O
+PR3O2X;DOUBLE SCULLS PR3;O
+PR3IDO4+;COXED FOUR PR3ID;O
+PR3O4+;COXED FOUR PR3;O
+PR3IDO4G;GIG PR3ID;O
