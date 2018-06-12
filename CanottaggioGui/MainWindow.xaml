@@ -10,59 +10,84 @@
     <Window.DataContext>
         <local:MainWindowViewModel x:Name="ViewModel"/>
     </Window.DataContext>
-    <Grid Margin="5,10,5,10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition />
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,10">
-            <TextBlock Text="Nome manifestazione" Margin="0,0,10,0" VerticalAlignment="Center"/>
-            <TextBox Text="{Binding Title, Mode=TwoWay}" Width="240" Margin="0,0,0,0" />
-        </StackPanel>
-        
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10">
-            <TextBlock Text="File dati incrociati" Margin="0,0,10,0" VerticalAlignment="Center"/>
-            <TextBox Text="{Binding PathCSV, Mode=TwoWay}" Width="236" IsReadOnly="True"/>
-            <Button Content="..." Command="{Binding SelectCSVFileCommand}" Width="25"/>
-        </StackPanel>
+    <Window.Resources>
+        <local:NullVisibility x:Key="NullVisibility"/>
+    </Window.Resources>
+    <TabControl>
+        <TabItem Header="Export">
+            <Grid Margin="5,10,5,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,10">
+                    <TextBlock Text="Nome manifestazione" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding Title, Mode=TwoWay}" Width="240" Margin="0,0,0,0" />
+                </StackPanel>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10">
-            <TextBlock Text="Cartella TVG" Margin="0,0,10,0" VerticalAlignment="Center"/>
-            <TextBox Text="{Binding TVGFolder, Mode=TwoWay}" IsReadOnly="True" Width="265"/>
-            <Button Content="..." Command="{Binding SelectTVGPathCommand}" Width="25"/>
-        </StackPanel>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10">
+                    <TextBlock Text="File dati incrociati" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding PathCSV, Mode=TwoWay}" Width="236" IsReadOnly="True"/>
+                    <Button Content="..." Command="{Binding SelectCSVFileCommand}" Width="25"/>
+                </StackPanel>
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,10" HorizontalAlignment="Left">
-            <TextBlock Text="Export" Margin="0,0,10,0" VerticalAlignment="Center"/>
-            <ComboBox Width="90" SelectedIndex="0" SelectedItem="{Binding ExportType}">
-                <ComboBox.Items>
-                    <sys:String>tutto</sys:String>
-                    <sys:String>mispeaker</sys:String>
-                    <sys:String>tvg</sys:String>
-                    <sys:String>atleti</sys:String>
-                    <sys:String>bandiere</sys:String>
-                </ComboBox.Items>
-            </ComboBox>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10">
+                    <TextBlock Text="Cartella TVG" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding TVGFolder, Mode=TwoWay}" IsReadOnly="True" Width="265"/>
+                    <Button Content="..." Command="{Binding SelectTVGPathCommand}" Width="25"/>
+                </StackPanel>
 
-            <TextBlock Text="Tipo" Margin="10,0,10,0" VerticalAlignment="Center"/>
-            <ComboBox Width="110" SelectedIndex="1" SelectedItem="{Binding ExportTypeNation}">
-                <ComboBox.Items>
-                    <sys:String>Nazionale</sys:String>
-                    <sys:String>Internazionale</sys:String>
-                </ComboBox.Items>
-            </ComboBox>
-        </StackPanel>
-        <StackPanel Grid.Row="4" Margin="0,10">
-            <Button Content="Avvia" Width="50" Height="40" Command="{Binding StartAction}"/>
-        </StackPanel>
+                <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,10" HorizontalAlignment="Left">
+                    <TextBlock Text="Export" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <ComboBox Width="90" SelectedIndex="0" SelectedItem="{Binding ExportType}">
+                        <ComboBox.Items>
+                            <sys:String>tutto</sys:String>
+                            <sys:String>mispeaker</sys:String>
+                            <sys:String>tvg</sys:String>
+                            <sys:String>atleti</sys:String>
+                            <sys:String>bandiere</sys:String>
+                        </ComboBox.Items>
+                    </ComboBox>
 
-        <TextBox Grid.Row="5" Text="{Binding TextArea}" AcceptsReturn="True" AcceptsTab="True" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                    <TextBlock Text="Tipo" Margin="10,0,10,0" VerticalAlignment="Center"/>
+                    <ComboBox Width="110" SelectedIndex="1" SelectedItem="{Binding ExportTypeNation}">
+                        <ComboBox.Items>
+                            <sys:String>Nazionale</sys:String>
+                            <sys:String>Internazionale</sys:String>
+                        </ComboBox.Items>
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Grid.Row="4" Margin="0,10">
+                    <Button Content="Avvia" Width="50" Height="40" Command="{Binding StartAction}"/>
+                </StackPanel>
 
-        <TextBlock Grid.Row="6" Text="Giuseppe Elefante - Versione 1.0" HorizontalAlignment="Right" Margin="5,0" Foreground="Gray"/>
-    </Grid>
+                <TextBox Grid.Row="5" Text="{Binding TextArea}" AcceptsReturn="True" AcceptsTab="True" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+
+                <TextBlock Grid.Row="6" Text="Giuseppe Elefante - Versione 1.1" HorizontalAlignment="Right" Margin="5,0" Foreground="Gray"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Cerca atleta">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,10">
+                    <TextBox Text="{Binding AthleteNameSearch, Mode=TwoWay}" Width="188" TextAlignment="Center" VerticalContentAlignment="Center"/>
+                    <Button Content="Cerca" Height="30" Width="55" Margin="10,0" Command="{Binding SearchAthleteCommand}"/>
+                </StackPanel>
+                <Label Grid.Row="1" Visibility="{Binding WebSearchUrl, Converter={StaticResource NullVisibility}}" HorizontalAlignment="Center">
+                    <Hyperlink Command="{Binding OpenSearchUrlCommand}">Apri nel browser</Hyperlink>
+                </Label>
+                <ListView Grid.Row="2" ItemsSource="{Binding AthleteResults}"/>
+            </Grid>
+        </TabItem>
+    </TabControl>
+    
 </Window>

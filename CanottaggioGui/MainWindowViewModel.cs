@@ -1,16 +1,22 @@
 ﻿using CanottaggioGui.Data;
 using CanottaggioGui.DataConverters;
+using HtmlAgilityPack;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -21,8 +27,10 @@ namespace CanottaggioGui
         private AppDataLoader dataLoader;
         private MiSpeakerConverter mispeaker;
         private TVGConverter tvg;
+        private HttpClient httpClient;
         public MainWindowViewModel()
         {
+            httpClient = new HttpClient();
             Task.Factory.StartNew(() =>
             {
                 dataLoader = new AppDataLoader();
@@ -49,7 +57,7 @@ namespace CanottaggioGui
         }
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private string _pathCsv = string.Empty, _tvgFolder = @"C:\tvg\Canottaggio_Int", _title, _exportType, _exportTypeNation, textArea;
+        private string _pathCsv = string.Empty, _tvgFolder = @"C:\tvg\Canottaggio_Int", _title, _exportType, _exportTypeNation, textArea, athleteSearchName, athleteSearchUrl;
         private bool _loaded = false;
         
         public string PathCSV { get => _pathCsv; set => Set(ref _pathCsv, value); }
@@ -58,10 +66,13 @@ namespace CanottaggioGui
         public string ExportType { get => _exportType; set => Set(ref _exportType, value); }
         public string ExportTypeNation { get => _exportTypeNation; set => Set(ref _exportTypeNation, value); }
         public string TextArea { get => textArea; set => Set(ref textArea, value); }
+        public string AthleteNameSearch { get => athleteSearchName; set => Set(ref athleteSearchName, value); }
+        public string WebSearchUrl { get => athleteSearchUrl; set => Set(ref athleteSearchUrl, value); }
+        public ObservableCollection<Athlete> AthleteResults { get; } = new ObservableCollection<Athlete>();
 
         public bool IsProgramLoaded { get => _loaded; set => Set(ref _loaded, value); }
         
-        private RelayCommand _startCmd, _selectCSVCmd, _selectTVGCmd;
+        private RelayCommand _startCmd, _selectCSVCmd, _selectTVGCmd, _searchAthleteCmd, _openSearchUrlCmd;
 
         public RelayCommand StartAction =>
             _startCmd ??
@@ -141,6 +152,51 @@ namespace CanottaggioGui
                     tvg.BaseFolder = TVGFolder;
                 }
             }));
+        public RelayCommand SearchAthleteCommand =>
+            _searchAthleteCmd ??
+            (_searchAthleteCmd = new RelayCommand(async () =>
+            {
+                if (string.IsNullOrEmpty(AthleteNameSearch))
+                    return;
+
+                AthleteResults.Clear();
+                WebSearchUrl = string.Empty;
+
+                WebSearchUrl = $"http://www.worldrowing.com/athletes/search/name/{AthleteNameSearch.Replace(' ', '-')}";
+                var htmlContent = await httpClient.GetStringAsync(WebSearchUrl);
+                if (string.IsNullOrEmpty(htmlContent))
+                    return;
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(htmlContent);
+
+                try
+                {
+                    var ul = doc.DocumentNode.SelectSingleNode("/html/body/div[7]/div/div[1]/div/div/div/div/ul");
+                    var list = ul.Descendants("figcaption");
+                    foreach(var fig in list)
+                    {
+                        var name = WebUtility.HtmlDecode(fig.Descendants("a").First().InnerText);
+                        var nation = fig.Descendants("abbr").First().InnerText;
+                        AthleteResults.Add(new Athlete()
+                        {
+                            Name = name,
+                            Nation = nation
+                        });
+                    }
+                }
+                catch
+                {
+                    
+                }
+            }));
+        public RelayCommand OpenSearchUrlCommand =>
+            _openSearchUrlCmd ??
+            (_openSearchUrlCmd = new RelayCommand(() =>
+            {
+                if (!Uri.IsWellFormedUriString(WebSearchUrl, UriKind.Absolute))
+                    return;
+                Process.Start(WebSearchUrl);
+            }));
 
         private void Set<K>(ref K k, K value, [CallerMemberName]string fieldName = "")
         {
@@ -179,5 +235,19 @@ namespace CanottaggioGui
             action.Invoke();
         }
     }
+    public class NullVisibility : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var str = value as string;
+            if (string.IsNullOrEmpty(str))
+                return Visibility.Hidden;
+            return Visibility.Visible;
+        }
 
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
