@@ -33,9 +33,10 @@ namespace CanottaggioGui.DataConverters
                         var category = group.First()["Categoria"];
                         var firstAtleta = group.First();
                         var isTeam = firstAtleta.ContainsKey("Atleta3") && !string.IsNullOrEmpty(firstAtleta["Atleta3"]?.Trim());
+                        var isDuo = !isTeam && firstAtleta.ContainsKey("Atleta2") && !string.IsNullOrEmpty(firstAtleta["Atleta2"]);
                         var worksheet = excelPackage.Workbook.Worksheets.Add(batteryNum);
                         worksheet.Cells["A1"].Value = title;
-                        worksheet.Cells["A2"].Value = $"Starting list {category}";
+                        worksheet.Cells["A2"].Value = $"Start list {category}";
                         worksheet.Cells["A3"].Value = "Acqua";
                         worksheet.Cells["B3"].Value = "Pettorale";
                         worksheet.Cells["C3"].Value = "Flag";
@@ -58,7 +59,8 @@ namespace CanottaggioGui.DataConverters
                             worksheet.Cells[$"B{4 + j}"].Value = Int32.Parse(atleta["Pettorale"]);
                             worksheet.Cells[$"C{4 + j}"].Value = $@"Flags3D\{GetFlagName(atleta["Nazione"])}.png";
                             worksheet.Cells[$"D{4 + j}"].Value = GetSurnameInt(atleta["Nazione"], isTeam);
-                            worksheet.Cells[$"E{4 + j}"].Value = isTeam ? "" : atleta["Atleta1"].Replace("|", " ");
+                            worksheet.Cells[$"E{4 + j}"].Value = isTeam ? ""
+                                                                        : (isDuo ? $"{atleta["Atleta1"].Split('|')[0]}-{atleta["Atleta2"].Split('|')[0]}" : atleta["Atleta1"].Replace("|", " "));
                             worksheet.Cells[$"F{4 + j}"].Value = GetTeamNameInt(atleta["Nazione"]);
                             worksheet.Cells[$"G{4 + j}"].Value = atleta.ContainsKey("Atleta1") && !string.IsNullOrEmpty(atleta["Atleta1"]) ? atleta["Atleta1"].Replace("|", " ") : "";
                             worksheet.Cells[$"H{4 + j}"].Value = atleta.ContainsKey("Atleta2") && !string.IsNullOrEmpty(atleta["Atleta2"]) ? atleta["Atleta2"].Replace("|", " ") : "";
